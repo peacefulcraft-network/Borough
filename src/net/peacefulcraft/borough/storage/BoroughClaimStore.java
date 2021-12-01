@@ -16,11 +16,11 @@ public class BoroughClaimStore {
 	}
 
 	protected String computeChunkHash(BoroughChunk chunk) {
-		return this.computeChunkHash(chunk.getWorld(), chunk.getChunkX(), chunk.getChunkZ());
+		return this.computeChunkHash(chunk.getWorld(), chunk.getChunkX(), chunk.getChunkY(), chunk.getChunkZ());
 	}
 
-	protected String computeChunkHash(String world, int x, int z) {
-		return world + "_x_" + "_z";
+	protected String computeChunkHash(String world, int x, int y, int z) {
+		return world + "_" + x + "_" + y + "_" + "_" + z;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class BoroughClaimStore {
 	 * @param String Name of the claim to add this chunk too
 	 * @return BoroughClaim object for the newly claimed chunk.
 	 */
-	public BoroughClaim claimChunk(String world, int x, int z, BoroughClaim claim) {
+	public BoroughClaim claimChunk(String world, int x, int y, int z, BoroughClaim claim) {
 		return null;
 	}
 
@@ -77,7 +77,7 @@ public class BoroughClaimStore {
 	 * @param z Chunk z coordinate. (Not world coordinates)
 	 * @return BoroughChunk object or NULL if chunk is not claimed.
 	 */
-	public BoroughChunk getChunk(String world, int x, int z) {
+	public BoroughChunk getChunk(String world, int x, int y, int z) {
 		return null;
 	}
 
@@ -88,7 +88,7 @@ public class BoroughClaimStore {
 	 * @param x Chunk x coordinate. (Not world coordinates)
 	 * @param z Chunk z coordinate. (Not world coordinates)
 	 */
-	public void unclaimChunk(String world, int x, int z) {
+	public void unclaimChunk(String world, int x, int y, int z) {
 
 	}
 }
