@@ -2,6 +2,7 @@ package net.peacefulcraft.borough.storage;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -90,5 +91,13 @@ public class BoroughClaimStore {
 	 */
 	public void unclaimChunk(String world, int x, int z) {
 
+	}
+
+	/**
+	 * @param user
+	 * @return List of claim names which the user has access to at the requested permission level
+	 */
+	public List<String> getClaimsByUser(UUID user, BoroughChunkPermissionLevel permissionFilter) {
+		return null;
 	}
 }

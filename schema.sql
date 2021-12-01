@@ -79,7 +79,7 @@ ALTER TABLE `claim_chunk`
 -- Indexes for table `claim_permission`
 --
 ALTER TABLE `claim_permission`
-  ADD UNIQUE KEY `user_uuid` (`user_uuid`,`chunk_id`,`level`),
+  ADD UNIQUE KEY `user_uuid` (`user_uuid`,`claim_id`,`level`),
   ADD KEY `chunk_id` (`chunk_id`);
 
 --
@@ -106,7 +106,7 @@ ALTER TABLE `claim_chunk`
 -- Constraints for table `claim_permission`
 --
 ALTER TABLE `claim_permission`
-  ADD CONSTRAINT `chunk_id` FOREIGN KEY (`chunk_id`) REFERENCES `claim` (`claim_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `claim_id` FOREIGN KEY (`claim_id`) REFERENCES `claim` (`claim_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
