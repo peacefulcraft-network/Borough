@@ -1,5 +1,5 @@
-# Bukkit-Plugin-Template
-A Mineccraft Bukkit Plugin Template
+# Borough
+PCN Land Claim System
 
 # Usage
 - This template is tailored of usage in VSCode. You should be prompted to install some VSCode extensions when you open the repo in VSCode to facilitate Java development. This template will still work in other IDEs and you can delete the `.vscode` folder if you don't plan to use VSCode.
