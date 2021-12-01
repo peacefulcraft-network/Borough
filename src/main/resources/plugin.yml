@@ -2,26 +2,22 @@
 # Reference
 # https://bukkit.gamepedia.com/Plugin_YAML
 #
-name: Templateus
-main: net.peacefulcraft.templateus.Templateus
+name: Borough
+main: net.peacefulcraft.borough.Borough
 version: 0.0.1
-api-version: 1.16
+api-version: 1.18
 website: https://www.peacefulcraft.net/
 depend: []
-softdepend: []
+softdepend: [ "Vault" ]
 
 commands:
-  example:
-    aliases: [ 'exmple' ]
-    description: This is an example command
-    permission-message:  Permission templateus.example is required to use this command
-    usage: /<command> to use the example command.
+  claim:
+    description: Create, expand, and modify land claims.
+    usage: /<command> [ add-admin | add-builder | add-moderator | create | delete | extend | info ] to use the example command.
+  unclaim:
+    description: Unclaim the chunk in which you stand.
+    usage: /<command>
 
 permissions:
-  templateus.*:
-    description: Gives access to all templateus commands
-    children:
-      templateus.example: true
-  templateus.example:
-    description: Gives access to tempateus' example command
-    default: op
+  pcn.staff:
+    description: Give user staff permissions

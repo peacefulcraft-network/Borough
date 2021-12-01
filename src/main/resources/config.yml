@@ -1,1 +1,8 @@
 debug: false
+
+mysql:
+  ip: localhost
+  port: 3306
+  database: borough
+  username: usernane
+  password: "*******"
