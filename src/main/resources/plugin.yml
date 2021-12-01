@@ -1,0 +1,27 @@
+#
+# Reference
+# https://bukkit.gamepedia.com/Plugin_YAML
+#
+name: Templateus
+main: net.peacefulcraft.templateus.Templateus
+version: 0.0.1
+api-version: 1.16
+website: https://www.peacefulcraft.net/
+depend: []
+softdepend: []
+
+commands:
+  example:
+    aliases: [ 'exmple' ]
+    description: This is an example command
+    permission-message:  Permission templateus.example is required to use this command
+    usage: /<command> to use the example command.
+
+permissions:
+  templateus.*:
+    description: Gives access to all templateus commands
+    children:
+      templateus.example: true
+  templateus.example:
+    description: Gives access to tempateus' example command
+    default: op
