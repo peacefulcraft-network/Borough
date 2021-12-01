@@ -1,10 +1,5 @@
 package net.peacefulcraft.borough.storage;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.UUID;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -33,29 +28,12 @@ public class SQLQueries {
 	}
 
 	public static void teardown() {
-		ds.close();
+
 	}
 
-	public BoroughClaim createClaim(String name, UUID owner) {
-		try (
-			Connection mysql = ds.getConnection();
-		) {
-			PreparedStatement stmt = mysql.prepareStatement("INSERT INTO `claim`(name, creator_uuid) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
-			stmt.setString(1, name);
-			stmt.setString(2, owner.toString());
-			stmt.executeUpdate();
+	public BoroughChunk createClaim(String name, BoroughChunk chunk) {
+		return null;
 
-			ResultSet keys = stmt.getGeneratedKeys();
-			keys.next();
-			int claimId = keys.getInt(1);
-			stmt.close();
-
-			return new BoroughClaim(claimId, name);
-
-		} catch (SQLException ex) {
-			Borough._this().logSevere("Error creating claim " + name + " for " + owner + ". ");
-			throw new RuntimeException("Query error.", ex);
-		}
 	}
 
 	public BoroughChunk deleteClaim(BoroughChunk chunk) {
@@ -83,7 +61,7 @@ public class SQLQueries {
 
 	}
 
-	public BoroughChunk getBoroughChunk(String world, int x, int y, int z) {
+	public BoroughChunk getBoroughChunk(String world, int x, int z) {
 		return null;
 
 	}

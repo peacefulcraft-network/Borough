@@ -14,12 +14,10 @@ public class BoroughChunk {
 		public String getWorld() { return this.world; }
 	private int x;
 		public int getChunkX() { return this.x; }
-	private int y;
-		public int getChunkY() { return this.y; }
 	private int z;
 		public int getChunkZ() { return this.z; }
 
-	public BoroughChunk(String world, int x, int y, int z) {
+	public BoroughChunk(String world, int x, int z) {
 		this.world = world;
 		this.x = x;
 		this.z = z;

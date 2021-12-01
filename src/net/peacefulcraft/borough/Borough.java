@@ -7,7 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
-import net.peacefulcraft.borough.storage.SQLQueries;
 
 public class Borough extends JavaPlugin {
 
@@ -32,7 +31,6 @@ public class Borough extends JavaPlugin {
 		// Save default config if one does not exist. Then load the configuration into
 		// memory
 		configuration = new MainConfiguration();
-		SQLQueries.setup();
 
 		claimStore = new BoroughClaimStore();
 
@@ -65,7 +63,6 @@ public class Borough extends JavaPlugin {
 	 */
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
-		SQLQueries.teardown();
 	}
 
 	private void setupCommands() {
