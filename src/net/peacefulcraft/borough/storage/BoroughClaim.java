@@ -25,6 +25,16 @@ public class BoroughClaim {
 	private List<UUID> builders;
 		public List<UUID> getBuilders() { return Collections.unmodifiableList(this.builders); }
 
+	private Boolean allowBlockDamage;
+		public Boolean doesAllowBlockDamage() { return this.allowBlockDamage; }
+		public void setBlockDamage(Boolean b) { this.allowBlockDamage = b; }
+	private Boolean allowFluidMovement;
+		public Boolean doesAllowFluidMovement() { return this.allowFluidMovement; }
+		public void setFluidMovement(Boolean b) { this.allowFluidMovement = b; }
+	private Boolean allowPVP;
+		public Boolean doesAllowPVP() { return this.allowPVP; }
+		public void setPVP(Boolean b) { this.allowPVP = b; }
+
 	public BoroughClaim(int claimId, String claimName) {
 		this.claimId = claimId;
 		this.claimName = claimName;
@@ -32,6 +42,10 @@ public class BoroughClaim {
 		this.owners = Collections.synchronizedList(owners);
 		this.moderators = Collections.synchronizedList(moderators);
 		this.builders = Collections.synchronizedList(builders);
+
+		this.allowBlockDamage = true;
+		this.allowFluidMovement = true;
+		this.allowPVP = true;
 	}
 
 	/**

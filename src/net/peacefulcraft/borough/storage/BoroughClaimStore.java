@@ -8,6 +8,8 @@ import java.util.UUID;
 public class BoroughClaimStore {
 	
 	private Map<String, BoroughClaim> claimCache;
+
+	
 	private Map<String, BoroughChunk> chunkCache;
 
 	public BoroughClaimStore() {
