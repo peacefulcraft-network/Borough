@@ -20,7 +20,7 @@ public class BoroughClaimStore {
 	}
 
 	protected String computeChunkHash(String world, int x, int z) {
-		return world + "_x_" + "_z";
+		return world + "_" + x + "_" + z;
 	}
 
 	/**
