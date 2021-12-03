@@ -28,14 +28,18 @@ public class BoroughClaimStore {
 	}
 
 	/**
-	 * Performs a direct check against the cached chunks
+	 * Inserts BoroughChunk object into cache
 	 * 
-	 * @param world World of chunk
-	 * @param x Chunk X
-	 * @param z Chunk Z
+	 * @param bc BoroughChunk object
 	 */
-	public void checkCachedChunk(String world, int x, int z) {
+	public void insertChunkCache(BoroughChunk bc) {
 
+		if (bc == null) { return; }
+
+		this.chunkCache.put(
+			computeChunkHash(bc), 
+			bc
+		);
 	}
 
 	/**
@@ -97,7 +101,7 @@ public class BoroughClaimStore {
 	}
 
 	/**
-	 * get claim information about requested chunk
+	 * Get claim information about requested chunk
 	 * 
 	 * @param loc Raw location of event
 	 * @return BoroughChunk object or NULL if chunk is not claimed
