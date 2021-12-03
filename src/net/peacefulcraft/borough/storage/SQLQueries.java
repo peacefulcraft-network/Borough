@@ -37,7 +37,7 @@ public class SQLQueries {
 
 	}
 
-	public BoroughClaim createClaim(String name, UUID owner) {
+	public static BoroughClaim createClaim(String name, UUID owner) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -59,7 +59,7 @@ public class SQLQueries {
 		}
 	}
 
-	public BoroughChunk deleteClaim(BoroughChunk chunk) {
+	public static BoroughChunk deleteClaim(BoroughChunk chunk) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -76,7 +76,7 @@ public class SQLQueries {
 		}
 	}
 
-	public BoroughChunk claimChunk(BoroughClaim claimSource, BoroughChunk claimTarget) {
+	public static BoroughChunk claimChunk(BoroughClaim claimSource, BoroughChunk claimTarget) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -96,7 +96,7 @@ public class SQLQueries {
 		}
 	}
 
-	public BoroughChunk unclaimChunk(BoroughChunk chunk) {
+	public static BoroughChunk unclaimChunk(BoroughChunk chunk) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -115,7 +115,7 @@ public class SQLQueries {
 		}
 	}
 
-	public void setPermissionsOnClaim(BoroughChunk chunk, UUID user, BoroughChunkPermissionLevel level) {
+	public static void setPermissionsOnClaim(BoroughChunk chunk, UUID user, BoroughChunkPermissionLevel level) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -132,7 +132,7 @@ public class SQLQueries {
 		}
 	}
 
-	public void unsetPermissionsOnClaim(BoroughChunk chunk, UUID user) {
+	public static void unsetPermissionsOnClaim(BoroughChunk chunk, UUID user) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
@@ -148,7 +148,7 @@ public class SQLQueries {
 		}
 	}
 
-	public BoroughChunk getBoroughChunk(String world, int x, int z) {
+	public static BoroughChunk getBoroughChunk(String world, int x, int z) {
 		try (
 			Connection mysql = ds.getConnection()
 		) {
@@ -168,7 +168,7 @@ public class SQLQueries {
 		}
 	}
 
-	public BoroughChunk getBoroughChunk(String name) {
+	public static BoroughChunk getBoroughChunk(String name) {
 		// TODO: Pending UUID resolution
 
 		return null;
