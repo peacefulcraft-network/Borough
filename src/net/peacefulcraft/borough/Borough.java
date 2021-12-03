@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
+import net.peacefulcraft.borough.storage.UUIDCache;
 
 public class Borough extends JavaPlugin {
 
@@ -22,6 +23,8 @@ public class Borough extends JavaPlugin {
 	private static BoroughClaimStore claimStore;
 		public static BoroughClaimStore getClaimStore() { return claimStore; }
 
+	private static UUIDCache uuidCache;
+		public static UUIDCache getUUIDCache() { return uuidCache; }
 	/**
 	 * Called when Bukkit server enables the plguin
 	 * For improved reload behavior, use this as if it was the class constructor
@@ -32,6 +35,7 @@ public class Borough extends JavaPlugin {
 		// memory
 		configuration = new MainConfiguration();
 
+		uuidCache = new UUIDCache();
 		claimStore = new BoroughClaimStore();
 
 		this.setupCommands();
