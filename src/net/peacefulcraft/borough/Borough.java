@@ -6,6 +6,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.borough.config.MainConfiguration;
+import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
+import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
 import net.peacefulcraft.borough.storage.UUIDCache;
 
@@ -73,5 +75,7 @@ public class Borough extends JavaPlugin {
 	}
 
 	private void setupEventListeners() {
+		this.getServer().getPluginManager().registerEvents(new ChunkCacheEventListeners(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
 	}
 }
