@@ -25,11 +25,7 @@ public class PlayerCacheEventListeners implements Listener {
 		Location loc = ev.getBlock().getLocation();
 		Player p = ev.getPlayer();
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
@@ -41,11 +37,7 @@ public class PlayerCacheEventListeners implements Listener {
 		Location loc = ev.getBlock().getLocation();
 		Player p = ev.getPlayer();
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (ev.getBlock().getType().equals(Material.FIRE) && !chunk.doesAllowBlockDamage()) {
 			ev.setCancelled(true);
@@ -61,11 +53,7 @@ public class PlayerCacheEventListeners implements Listener {
 		Location loc = ev.getClickedBlock().getLocation();
 		Player p = ev.getPlayer();
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
@@ -81,11 +69,7 @@ public class PlayerCacheEventListeners implements Listener {
 		if (!(d instanceof Player)) { return; }
 		Player p = (Player)d;
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
@@ -96,11 +80,7 @@ public class PlayerCacheEventListeners implements Listener {
 	public void BlockDamageEventListener(BlockIgniteEvent ev) {
 		Location loc = ev.getBlock().getLocation();
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
 			ev.setCancelled(true);
@@ -111,11 +91,7 @@ public class PlayerCacheEventListeners implements Listener {
 	public void ExplodeEventListener(EntityExplodeEvent ev) {
 		Location loc = ev.getLocation();
 
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
 			ev.setCancelled(true);
@@ -126,11 +102,7 @@ public class PlayerCacheEventListeners implements Listener {
 	public void FluidMovementListener(BlockFromToEvent ev) {
 		Location loc = ev.getToBlock().getLocation();
 		
-		BoroughChunk chunk = Borough.getClaimStore().getChunk(
-			loc.getWorld().getName(), 
-			loc.getBlockX(), 
-			loc.getBlockZ()
-		);
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (!chunk.isChunkClaimed() || !chunk.doesAllowFluidMovement()) {
 			ev.setCancelled(true);

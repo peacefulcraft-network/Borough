@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Location;
+
 public class BoroughClaimStore {
 	
 	private Map<String, BoroughClaim> claimCache;
@@ -23,6 +25,17 @@ public class BoroughClaimStore {
 
 	protected String computeChunkHash(String world, int x, int z) {
 		return world + "_x_" + "_z";
+	}
+
+	/**
+	 * Performs a direct check against the cached chunks
+	 * 
+	 * @param world World of chunk
+	 * @param x Chunk X
+	 * @param z Chunk Z
+	 */
+	public void checkCachedChunk(String world, int x, int z) {
+
 	}
 
 	/**
@@ -81,6 +94,20 @@ public class BoroughClaimStore {
 	 */
 	public BoroughChunk getChunk(String world, int x, int z) {
 		return null;
+	}
+
+	/**
+	 * get claim information about requested chunk
+	 * 
+	 * @param loc Raw location of event
+	 * @return BoroughChunk object or NULL if chunk is not claimed
+	 */
+	public BoroughChunk getChunk(Location loc) {
+		return getChunk(
+			loc.getWorld().getName(),
+			loc.getChunk().getX(),
+			loc.getChunk().getZ()	
+		);
 	}
 
 	/**
