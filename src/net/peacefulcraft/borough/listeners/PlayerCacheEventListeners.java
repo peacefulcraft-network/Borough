@@ -102,7 +102,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
 			ev.setCancelled(true);
 		}
 	}
@@ -117,7 +117,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
 			ev.setCancelled(true);
 		}
 	}
@@ -132,7 +132,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.doesAllowFluidMovement()) {
 			ev.setCancelled(true);
 		}
 	}
