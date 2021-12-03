@@ -31,7 +31,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -51,7 +51,7 @@ public class PlayerCacheEventListeners implements Listener {
 			ev.setCancelled(true);
 		}
 
-		if (!chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -67,7 +67,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -87,7 +87,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.canUserBuild(p.getUniqueId())) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -102,7 +102,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.doesAllowBlockDamage()) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -117,7 +117,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.doesAllowBlockDamage()) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
@@ -132,7 +132,7 @@ public class PlayerCacheEventListeners implements Listener {
 			loc.getBlockZ()
 		);
 
-		if (!chunk.doesAllowFluidMovement()) {
+		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
 	}
