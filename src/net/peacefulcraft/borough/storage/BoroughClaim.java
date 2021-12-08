@@ -25,7 +25,7 @@ public class BoroughClaim {
 	private List<UUID> builders;
 		public List<UUID> getBuilders() { return Collections.unmodifiableList(this.builders); }
 
-	public BoroughClaim(int claimId, String claimName) {
+	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders) {
 		this.claimId = claimId;
 		this.claimName = claimName;
 

@@ -1,5 +1,7 @@
 package net.peacefulcraft.borough.storage;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.zaxxer.hikari.HikariConfig;
@@ -41,7 +43,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("INSERT INTO `claim`(name, creator_uuid) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement stmt = mysql.prepareStatement("INSERT INTO `claim`(claim_name, creator_uuid) VALUES(?,?)", Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, name);
 			stmt.setString(2, owner.toString());
 			stmt.executeUpdate();
@@ -51,7 +53,13 @@ public class SQLQueries {
 			int claimId = keys.getInt(1);
 			stmt.close();
 
-			return new BoroughClaim(claimId, name);
+			List<UUID> owners = new ArrayList<UUID>();
+			owners.add(owner);
+
+			List<UUID> moderators = new ArrayList<UUID>();
+			List<UUID> builders = new ArrayList<UUID>();
+
+			return new BoroughClaim(claimId, name, owners, moderators, builders);
 
 		} catch (SQLException ex) {
 			Borough._this().logSevere("Error creating claim " + name + " for " + owner + ". ");
@@ -68,15 +76,48 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection()
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("SELECT * FROM `claim` LEFT JOIN `uuid_cache` ON `claim`.`creator_uuid`=`uuid_cache`.`uuid` WHERE `creator_uuid`=? AND `claim_name`=?");
+			PreparedStatement stmt = mysql.prepareStatement("SELECT `claim_id`,`claim_name` FROM `claim` WHERE `creator_uuid`=? AND `claim_name`=?");
 			stmt.setString(1, owner.toString());
 			stmt.setString(2, claimName);
 			ResultSet result = stmt.executeQuery();
 
 			if (!result.next()) { return null; }
+			
+			// Grab fields
+			int claim_id = result.getInt("claim_id");
+			String claim_name = result.getNString("claim_name");
+			stmt.close();
 
-			BoroughClaim claimMeta = new BoroughClaim(result.getInt("claim_id"), result.getString("claim_name"));
-			Borough.getClaimStore().claimCache.put(BoroughClaimStore.getClaimKey(owner, claimName), claimMeta);
+			stmt = mysql.prepareStatement("SELECT `user_uuid`,`level` FROM `claim_permission` WHERE `claim_id`=?");
+			stmt.setInt(1, claim_id);
+			result = stmt.executeQuery();
+			List<UUID> owners = new ArrayList<UUID>();
+			owners.add(owner);
+			List<UUID> moderators = new ArrayList<UUID>();
+			List<UUID> builders = new ArrayList<UUID>();
+
+			// Get permissions
+			while (result.next()) {
+				String level = result.getString("level");
+				if (level == null) { continue; }
+
+				BoroughChunkPermissionLevel perms = BoroughChunkPermissionLevel.valueOf(level);
+				switch (perms) {
+					case BUILDER:
+						builders.add(UUID.fromString(result.getString("user_uuid")));
+						break;
+					case MODERATOR:
+						moderators.add(UUID.fromString(result.getString("user_uuid")));
+						break;
+					case OWNER:
+						owners.add(UUID.fromString(result.getString("user_uuid")));
+						break;
+				}
+			}
+
+			BoroughClaim claimMeta = new BoroughClaim(claim_id, claim_name, owners, moderators, builders);
+			String username = Borough.getUUIDCache().uuidToUsername(owner);
+			Borough.getClaimStore().claimCache.put(BoroughClaimStore.getClaimKey(username, claimName), claimMeta);
 			return claimMeta;
 		} catch (SQLException ex) {
 			Borough._this().logSevere("Error fetching claim (" + claimName + ").");

@@ -24,8 +24,8 @@ public class BoroughClaimStore {
 		this.chunkCache = Collections.synchronizedMap(new HashMap<String, BoroughChunk>());
 	}
 
-	protected static String getClaimKey(UUID owner, String claimName) {
-		return owner.toString() + ":" + claimName;
+	protected static String getClaimKey(String owner, String claimName) {
+		return owner + ":" + claimName;
 	}
 
 	protected static String[] splitClaimKey(String claimKey) {
@@ -61,7 +61,8 @@ public class BoroughClaimStore {
 	 * @return BoroughClaim object. If claim already exists, the existing claim object is silently returned.
 	 */
 	public BoroughClaim createClaim(String claimName, UUID owner) {
-		BoroughClaim claim = getClaim(getClaimKey(owner, claimName));
+		String username = Borough.getUUIDCache().uuidToUsername(owner);
+		BoroughClaim claim = getClaim(getClaimKey(username, claimName));
 		if (claim == null) {
 			claim = SQLQueries.createClaim(claimName, owner);
 		}
@@ -134,9 +135,18 @@ public class BoroughClaimStore {
 	 * @return BoroughChunk object.
 	 */
 	public BoroughChunk getChunk(String world, int x, int z) {
+		// Check cache
 		BoroughChunk chunk = this.chunkCache.get(getChunkKey(world, x, z));
+		
+		// Check DB
 		if (chunk == null) {
 			chunk = SQLQueries.getBoroughChunk(world, x, z);
+		}
+
+		// Doesn't exist. Return wrapper with null claim meta.
+		if (chunk == null) {
+			chunk = new BoroughChunk(null, world, x, z);
+			this.chunkCache.put(getChunkKey(world, x, z), chunk);
 		}
 
 		return chunk;
