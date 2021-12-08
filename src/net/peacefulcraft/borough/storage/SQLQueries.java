@@ -190,7 +190,7 @@ public class SQLQueries {
 
 			} else {
 			// claimed
-				String claimName = ownerUsername + ":" + result.getString("name");
+				String claimName = ownerUsername + ":" + result.getString("claim_name");
 				BoroughClaim claimMeta = Borough.getClaimStore().getClaim(claimName);
 				BoroughChunk chunk = new BoroughChunk(claimMeta, result.getString("world"), result.getInt("x"), result.getInt("z"));
 				Borough.getClaimStore().chunkCache.put(BoroughClaimStore.getChunkKey(chunk), chunk);
