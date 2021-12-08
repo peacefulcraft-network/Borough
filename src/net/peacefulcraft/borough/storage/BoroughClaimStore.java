@@ -1,5 +1,6 @@
 package net.peacefulcraft.borough.storage;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -164,6 +165,6 @@ public class BoroughClaimStore {
 	 * @return List of claim names which the user has access to at the requested permission level
 	 */
 	public List<String> getClaimsByUser(UUID user, BoroughChunkPermissionLevel permissionFilter) {
-		return null;
+		return new ArrayList<String>();
 	}
 }

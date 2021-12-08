@@ -184,35 +184,35 @@ public class SQLQueries {
 		}
 	}
 
-	public static void setPermissionsOnClaim(BoroughChunk chunk, UUID user, BoroughChunkPermissionLevel level) {
+	public static void setPermissionsOnClaim(BoroughClaim claim, UUID user, BoroughChunkPermissionLevel level) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
 			PreparedStatement stmt = mysql.prepareStatement("REPLACE INTO `claim_chunk` VALUES(?,?,?)");
 			stmt.setString(1, user.toString());
-			stmt.setInt(2, chunk.getClaimMeta().getClaimId());
+			stmt.setInt(2, claim.getClaimId());
 			stmt.setString(3, level.toString());
 			stmt.executeUpdate();
 			stmt.close();
 
 		} catch (SQLException ex) {
-			Borough._this().logSevere("Error updating permissions on claim " + chunk.getClaimMeta().getClaimId() + " (" + chunk.getWorld() + "," + chunk.getChunkX() + "," + chunk.getChunkZ() + "). Set " + user + " to " + level);
+			Borough._this().logSevere("Error updating permissions on claim " + claim.getClaimId() + ". Tried to set " + user + " to " + level);
 			throw new RuntimeException("Query error.", ex);
 		}
 	}
 
-	public static void unsetPermissionsOnClaim(BoroughChunk chunk, UUID user) {
+	public static void unsetPermissionsOnClaim(BoroughClaim claim, UUID user) {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
 			PreparedStatement stmt = mysql.prepareStatement("DELETE FROM `claim_permission` WHERE `user_uuid`=? AND `claim_id`=?");
 			stmt.setString(1, user.toString());
-			stmt.setInt(2, chunk.getClaimMeta().getClaimId());
+			stmt.setInt(2, claim.getClaimId());
 			stmt.executeUpdate();
 			stmt.close();
 
 		} catch (SQLException ex) {
-			Borough._this().logSevere("Error updating permissions on claim " + chunk.getClaimMeta().getClaimId() + " (" + chunk.getWorld() + "," + chunk.getChunkX() + "," + chunk.getChunkZ() + "). Unuset " + user);
+			Borough._this().logSevere("Error updating permissions on claim " + claim.getClaimId() + ". Tried to unset " + user);
 			throw new RuntimeException("Query error.", ex);
 		}
 	}

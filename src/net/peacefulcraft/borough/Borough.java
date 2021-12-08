@@ -5,6 +5,8 @@ import java.util.logging.Level;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.borough.commands.ClaimCommand;
+import net.peacefulcraft.borough.commands.UnclaimCommand;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
@@ -72,6 +74,10 @@ public class Borough extends JavaPlugin {
 	}
 
 	private void setupCommands() {
+		ClaimCommand claimCommand = new ClaimCommand();
+		this.getCommand("claim").setExecutor(claimCommand);
+		this.getCommand("claim").setTabCompleter(claimCommand);
+		this.getCommand("unclaim").setExecutor(new UnclaimCommand());		
 	}
 
 	private void setupEventListeners() {
