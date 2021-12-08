@@ -11,6 +11,7 @@ import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
+import net.peacefulcraft.borough.storage.SQLQueries;
 import net.peacefulcraft.borough.storage.UUIDCache;
 
 public class Borough extends JavaPlugin {
@@ -38,6 +39,8 @@ public class Borough extends JavaPlugin {
 		// Save default config if one does not exist. Then load the configuration into
 		// memory
 		configuration = new MainConfiguration();
+
+		SQLQueries.setup();
 
 		uuidCache = new UUIDCache();
 		claimStore = new BoroughClaimStore();
@@ -71,6 +74,7 @@ public class Borough extends JavaPlugin {
 	 */
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
+		SQLQueries.teardown();
 	}
 
 	private void setupCommands() {

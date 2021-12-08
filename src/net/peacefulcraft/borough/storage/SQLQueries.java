@@ -34,7 +34,7 @@ public class SQLQueries {
 	}
 
 	public static void teardown() {
-
+		ds.close();
 	}
 
 	public static BoroughClaim createClaim(String name, UUID owner) {
