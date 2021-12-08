@@ -29,12 +29,19 @@ public class UnclaimCommand implements CommandExecutor {
 		CompletableFuture.runAsync(() -> {
 			BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 			if (boroughChunk.isChunkClaimed()) {
-				Borough.getClaimStore().unclaimChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
+				if (boroughChunk.getClaimMeta().getOwners().contains(p.getUniqueId())) {
+					Borough.getClaimStore().unclaimChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 
-				// Go back to Bukkit land to do Bukkit things
-				Borough._this().getServer().getScheduler().runTask(Borough._this(), ()-> {
-					sender.sendMessage(Borough.messagingPrefix + "The chunk you are standing in is not claimed.");
-				});
+					// Go back to Bukkit land to do Bukkit things
+					Borough._this().getServer().getScheduler().runTask(Borough._this(), ()-> {
+						sender.sendMessage(Borough.messagingPrefix + "The chunk you are standing in is not claimed.");
+					});
+				} else {
+					// Go back to Bukkit land to do Bukkit things
+					Borough._this().getServer().getScheduler().runTask(Borough._this(), ()-> {
+						sender.sendMessage(Borough.messagingPrefix + "You do not have permission to modify claim boundries on this claim.");
+					});
+				}
 			} else {
 				// Go back to Bukkit land to do Bukkit things
 				Borough._this().getServer().getScheduler().runTask(Borough._this(), ()-> {
