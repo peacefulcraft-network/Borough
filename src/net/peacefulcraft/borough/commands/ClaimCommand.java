@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Chunk;
 import org.bukkit.command.Command;
@@ -42,7 +41,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					Borough._this().logDebug("Processing claim create request for user " + p.getName() + ", claim " + args[1]);
 					Chunk chunk = p.getLocation().getChunk();
 					// Go async because blocking SQL might happen
-					CompletableFuture.runAsync(() -> {
+					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 						try {
 							BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 							if (boroughChunk.isChunkClaimed()) {
@@ -77,7 +76,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					} else {
 						Chunk chunk = p.getLocation().getChunk();
 						// Go async because blocking SQL might happen
-						CompletableFuture.runAsync(() -> {
+						Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 							try {
 								BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
 								BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
@@ -112,7 +111,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have ownership permissions on this claim?");
 					} else if (args.length > 2 && args[2].equalsIgnoreCase("confirm")) {
 						// Go async because blocking SQL might happen
-						CompletableFuture.runAsync(() -> {
+						Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 							try {
 								Borough.getClaimStore().deleteClaim(args[1]);
 
@@ -141,7 +140,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					} else {
 						Chunk chunk = p.getLocation().getChunk();
 						// Go async because blocking SQL might happen
-						CompletableFuture.runAsync(() -> {
+						Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 							try {
 								BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
 
@@ -182,7 +181,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 							String username = args[2];
 
 							// Go async because blocking SQL might happen
-							CompletableFuture.runAsync(() -> {
+							Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 								try {
 									UUID uuid = Borough.getUUIDCache().usernameToUUID(username);
 									if (uuid == null) {
@@ -223,7 +222,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 							String username = args[2];
 
 							// Go async because blocking SQL might happen
-							CompletableFuture.runAsync(() -> {
+							Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 								try {
 									UUID uuid = Borough.getUUIDCache().usernameToUUID(username);
 									if (uuid == null) {
@@ -263,7 +262,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 							String username = args[2];
 
 							// Go async because blocking SQL might happen
-							CompletableFuture.runAsync(() -> {
+							Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 								try {
 									UUID uuid = Borough.getUUIDCache().usernameToUUID(username);
 									if (uuid == null) {
@@ -303,7 +302,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 							String username = args[2];
 
 							// Go async because blocking SQL might happen
-							CompletableFuture.runAsync(() -> {
+							Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 								try {
 									UUID uuid = Borough.getUUIDCache().usernameToUUID(username);
 									if (uuid == null) {
