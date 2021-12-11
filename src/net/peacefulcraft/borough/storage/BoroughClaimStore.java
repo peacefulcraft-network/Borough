@@ -64,7 +64,7 @@ public class BoroughClaimStore {
 		if (bc == null) { return; }
 
 		this.chunkCache.put(
-			computeChunkHash(bc), 
+			getChunkKey(bc), 
 			bc
 		);
 	}
