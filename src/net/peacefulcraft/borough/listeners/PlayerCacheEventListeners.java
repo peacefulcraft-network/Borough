@@ -63,20 +63,22 @@ public class PlayerCacheEventListeners implements Listener {
 
 	@EventHandler
 	public void EntityDamageByEntityEventListener(EntityDamageByEntityEvent ev) {
-		Entity e = ev.getEntity();
+		Entity e = ev.getDamager();
+		Entity vic = ev.getEntity();
 		Location loc = e.getLocation();
-
-		Entity d = ev.getDamager();
-		if (!(d instanceof Player)) { return; }
-		Player p = (Player)d;
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
-			ev.setCancelled(true);
+		if ((e instanceof Player) && (vic instanceof Player)) {
+			// PVP event
+			if (!chunk.isChunkClaimed() || !chunk.doesAllowPVP()) {
+				ev.setCancelled(true);
+			}
+		} else if ((e instanceof Player) && !(vic instanceof Player)) {
+			if (!chunk.isChunkClaimed()) {
+				ev.setCancelled(true);
+			}
 		}
-
-		//TODO: Modify this for player v player and player v passive
 	}
 
 	@EventHandler
