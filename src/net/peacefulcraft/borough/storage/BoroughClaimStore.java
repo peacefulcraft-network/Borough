@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
+import org.bukkit.Location;
 import net.peacefulcraft.borough.Borough;
 
 public class BoroughClaimStore {
@@ -55,6 +55,22 @@ public class BoroughClaimStore {
 
 	/**
 	 * Creates a new named claim object. Performs blocking SQL work.
+	 * Inserts BoroughChunk object into cache
+	 * 
+	 * @param bc BoroughChunk object
+	 */
+	public void insertChunkCache(BoroughChunk bc) {
+
+		if (bc == null) { return; }
+
+		this.chunkCache.put(
+			computeChunkHash(bc), 
+			bc
+		);
+	}
+
+	/**
+	 * Creates a new named claim object.
 	 * 
 	 * @param claimName Claim name
 	 * @param owner UUID of claim owner
@@ -153,7 +169,21 @@ public class BoroughClaimStore {
 	}
 
 	/**
-	 * Unclaim the requested chunk if it is claimed. No effect if chunk was not claimed. Performs blocking SQL work.
+	 * Get claim information about requested chunk
+	 * 
+	 * @param loc Raw location of event
+	 * @return BoroughChunk object or NULL if chunk is not claimed
+	 */
+	public BoroughChunk getChunk(Location loc) {
+		return getChunk(
+			loc.getWorld().getName(),
+			loc.getChunk().getX(),
+			loc.getChunk().getZ()	
+		);
+	}
+
+	/**
+	 * Unclaim the requested chunk if it is claimed. No effect if chunk was not claimed.
 	 * 
 	 * @param world World chunk is in
 	 * @param x Chunk x coordinate. (Not world coordinates)

@@ -35,4 +35,16 @@ public class BoroughChunk {
 			|| this.claimMeta.getOwners().contains(user) 
 		);
 	}
+
+	public boolean doesAllowBlockDamage() {
+		return this.claimMeta.doesAllowBlockDamage();
+	}
+
+	public boolean doesAllowFluidMovement() {
+		return this.claimMeta.doesAllowFluidMovement();
+	}
+
+	public boolean doesAllowPVP() {
+		return this.claimMeta.doesAllowPVP();
+	}
 }
