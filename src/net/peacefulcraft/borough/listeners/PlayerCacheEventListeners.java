@@ -14,6 +14,7 @@ import net.peacefulcraft.borough.storage.BoroughChunk;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -74,6 +75,8 @@ public class PlayerCacheEventListeners implements Listener {
 		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
 			ev.setCancelled(true);
 		}
+
+		//TODO: Modify this for player v player and player v passive
 	}
 
 	@EventHandler
@@ -103,6 +106,11 @@ public class PlayerCacheEventListeners implements Listener {
 		Location loc = ev.getToBlock().getLocation();
 		
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+
+		Block b = ev.getBlock();
+		if (!b.getType().equals(Material.LAVA) && !b.getType().equals(Material.WATER)) {
+			return;
+		}
 
 		if (!chunk.isChunkClaimed() || !chunk.doesAllowFluidMovement()) {
 			ev.setCancelled(true);
