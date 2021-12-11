@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import net.peacefulcraft.borough.storage.BoroughChunk;
+import net.peacefulcraft.borough.utilities.EntityHandler;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -85,7 +86,7 @@ public class PlayerCacheEventListeners implements Listener {
 				ev.setCancelled(true);
 			}
 		} else if ((e instanceof Player) && !(vic instanceof Player)) {
-			if (!chunk.isChunkClaimed()) {
+			if (!chunk.isChunkClaimed() && EntityHandler.isPassive(vic.getType())) {
 				ev.setCancelled(true);
 			}
 		}
