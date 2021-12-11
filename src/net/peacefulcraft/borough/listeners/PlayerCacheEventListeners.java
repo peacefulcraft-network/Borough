@@ -1,6 +1,10 @@
 package net.peacefulcraft.borough.listeners;
 
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+
+import net.peacefulcraft.borough.Borough;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -8,8 +12,6 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
-import net.peacefulcraft.borough.Borough;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 
 import org.bukkit.Location;
@@ -17,7 +19,17 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
+
+public class PlayerCacheEventListeners implements Listener {
+	
+	/**
+	 * Cache player UUIDs when they login.
+	 * @param ev
+	 */
+	@EventHandler
+	public void onPlayerJoin(AsyncPlayerPreLoginEvent ev) {
+		Borough.getUUIDCache().cacheUUIDUsernameMapping(ev.getUniqueId(), ev.getName());
+	}
 
 public class PlayerCacheEventListeners implements Listener {
 	
@@ -118,5 +130,4 @@ public class PlayerCacheEventListeners implements Listener {
 			ev.setCancelled(true);
 		}
 	}
-
 }
