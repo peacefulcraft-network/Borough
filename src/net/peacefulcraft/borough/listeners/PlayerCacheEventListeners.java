@@ -30,8 +30,6 @@ public class PlayerCacheEventListeners implements Listener {
 	public void onPlayerJoin(AsyncPlayerPreLoginEvent ev) {
 		Borough.getUUIDCache().cacheUUIDUsernameMapping(ev.getUniqueId(), ev.getName());
 	}
-
-public class PlayerCacheEventListeners implements Listener {
 	
 	@EventHandler
 	public void BlockBreakEventListener(BlockBreakEvent ev) {
