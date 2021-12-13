@@ -10,6 +10,7 @@ import net.peacefulcraft.borough.commands.UnclaimCommand;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
+import net.peacefulcraft.borough.listeners.PlayerMovementListener;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
 import net.peacefulcraft.borough.storage.SQLQueries;
 import net.peacefulcraft.borough.storage.UUIDCache;
@@ -87,5 +88,6 @@ public class Borough extends JavaPlugin {
 	private void setupEventListeners() {
 		this.getServer().getPluginManager().registerEvents(new ChunkCacheEventListeners(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerMovementListener(), this);
 	}
 }
