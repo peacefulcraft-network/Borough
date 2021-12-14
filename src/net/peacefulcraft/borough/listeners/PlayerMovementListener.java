@@ -27,19 +27,18 @@ public class PlayerMovementListener implements Listener {
 		// OR if key does not exist
 		// We process lookup
 		if (!playerMap.containsKey(id) || (playerMap.containsKey(id) && (playerMap.get(id) - currentTime) > 2000)) {
-			Borough._this().logDebug("[PlayerMovement] Player Map pass.");
+			playerMap.put(id, System.currentTimeMillis());
 			// Async task call to lookup cache
 			Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 				BoroughChunk fromChunk = Borough.getClaimStore().getChunk(ev.getFrom());
 				BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
 
+				Borough._this().logDebug("[Player Move] Task Run.");
 				if (!fromChunk.isChunkClaimed() && toChunk.isChunkClaimed()) {
 					// 1. From not claimed. To claimed
-					playerMap.put(id, System.currentTimeMillis());
 					sendAction(p, "Entered " + toChunk.getClaimMeta().getClaimName());
 				} else if(fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() && fromChunk.getClaimMeta().getClaimId() != toChunk.getClaimMeta().getClaimId()) {
 					// 2. Both claimed. Compare ids to confirm no match
-					playerMap.put(id, System.currentTimeMillis());
 					sendAction(p, "Entered " + toChunk.getClaimMeta().getClaimName());
 				}
 			});
