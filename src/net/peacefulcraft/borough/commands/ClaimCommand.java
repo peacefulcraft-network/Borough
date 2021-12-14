@@ -347,7 +347,58 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Borough.messagingPrefix + "'remove-user' command expects a claim name too. Claim names cannot contain spaces.");
 				}
 				break;
+			case "add-rule":
+				if (args.length > 1) {
+					if (!Borough.getClaimStore().getClaimsByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1])) {
+						sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator permissions on this claim?");
+					} else {
+						if (args.length > 3) {
+							String rule = args[2].toLowerCase();
+							
+							Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+								Boolean state = null;
+							
+								// This is a stupid switch statement but Boolean.valueOf does not through error for invalid input
+								switch (args[3].toLowerCase()) {
+									case "true":
+										state = true;
+									case "false":
+										state = false;
+									default:
+										sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to modify permissions on claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
+										Borough._this().logSevere("User: " + sender.getName() + " used invalid boolean input attempting command: add-rule");
+								}
+	
+								if (state == null) { return; }
 
+								try {
+									BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+									 switch (rule) {
+										 case "allowblockdamage":
+											claim.setBlockDamage(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowBlockDamage rule on " + args[1]);
+										case "allowfluidmovement":
+											claim.setFluidMovement(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowFluidMovement rule on " + args[1]);
+										case "allowpvp":
+											claim.setPVP(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowPVP rule on " + args[1]);
+										default:
+											sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects valid rules including: allowBlockDamage, allowFluidMovement, allowPVP. Please try again.");
+									 }
+
+								} catch (Exception ex) {
+									sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to modify permissions on claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
+									Borough._this().logSevere(ex.getMessage());
+									ex.printStackTrace();
+								}
+							});
+						}
+					}
+				} else {
+					sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects a claim name, rule, and boolean. Valid rules are: allowBlockDamage, allowFluidMovement, allowPVP. Contact staff if the issue persists.");
+				}
+				break;
 			default:
 				sender.sendMessage(Borough.messagingPrefix + "Unknown option " + args[0] + ". Valid sub commands are:");
 				this.sendMainHelpMessage(sender);
