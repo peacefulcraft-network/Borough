@@ -39,7 +39,8 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+			Borough._this().logDebug("[PlayerCache] Cancel BlockBreakEvent.");
 			ev.setCancelled(true);
 		}
 	}
@@ -52,22 +53,27 @@ public class PlayerCacheEventListeners implements Listener {
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
 		if (ev.getBlock().getType().equals(Material.FIRE) && !chunk.doesAllowBlockDamage()) {
+			Borough._this().logDebug("[PlayerCache] Cancel BlockPlaceEvent, Fire.");
 			ev.setCancelled(true);
 		}
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+			Borough._this().logDebug("[PlayerCache] Cancel BlockBreakEvent.");
 			ev.setCancelled(true);
 		}
 	}
 
 	@EventHandler
 	public void PlayerInteractEventListener(PlayerInteractEvent ev) {
+		if (ev.getClickedBlock() == null) { return; }
+
 		Location loc = ev.getClickedBlock().getLocation();
 		Player p = ev.getPlayer();
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!chunk.isChunkClaimed() || !chunk.canUserBuild(p.getUniqueId())) {
+		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEvent.");
 			ev.setCancelled(true);
 		}
 	}
@@ -82,11 +88,13 @@ public class PlayerCacheEventListeners implements Listener {
 
 		if ((e instanceof Player) && (vic instanceof Player)) {
 			// PVP event
-			if (!chunk.isChunkClaimed() || !chunk.doesAllowPVP()) {
+			if (chunk.isChunkClaimed() && !chunk.doesAllowPVP()) {
+				Borough._this().logDebug("[PlayerCache] Cancel PlayerDamagePlayerEvent.");
 				ev.setCancelled(true);
 			}
 		} else if ((e instanceof Player) && !(vic instanceof Player)) {
-			if (!chunk.isChunkClaimed() && EntityHandler.isPassive(vic.getType())) {
+			if (chunk.isChunkClaimed() && EntityHandler.isPassive(vic.getType())) {
+				Borough._this().logDebug("[PlayerCache] Cancel EntityDamagePassiveEvent.");
 				ev.setCancelled(true);
 			}
 		}
@@ -98,7 +106,8 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
+		if (chunk.isChunkClaimed() && !chunk.doesAllowBlockDamage()) {
+			Borough._this().logDebug("[PlayerCache] Cancel BlockIgniteEvent.");
 			ev.setCancelled(true);
 		}
 	}
@@ -109,7 +118,8 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!chunk.isChunkClaimed() || !chunk.doesAllowBlockDamage()) {
+		if (chunk.isChunkClaimed() && !chunk.doesAllowBlockDamage()) {
+			Borough._this().logDebug("[PlayerCache] Cancel EntityExplodeEvent.");
 			ev.setCancelled(true);
 		}
 	}
@@ -125,7 +135,8 @@ public class PlayerCacheEventListeners implements Listener {
 			return;
 		}
 
-		if (!chunk.isChunkClaimed() || !chunk.doesAllowFluidMovement()) {
+		if (chunk.isChunkClaimed() && !chunk.doesAllowFluidMovement()) {
+			Borough._this().logDebug("[PlayerCache] Cancel BlockFromToEvent, Water/Lava.");
 			ev.setCancelled(true);
 		}
 	}
