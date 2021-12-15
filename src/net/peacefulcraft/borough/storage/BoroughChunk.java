@@ -17,7 +17,8 @@ public class BoroughChunk {
 	private int z;
 		public int getChunkZ() { return this.z; }
 
-	public BoroughChunk(String world, int x, int z) {
+	public BoroughChunk(BoroughClaim claimMeta, String world, int x, int z) {
+		this.claimMeta = claimMeta;
 		this.world = world;
 		this.x = x;
 		this.z = z;
@@ -33,5 +34,17 @@ public class BoroughChunk {
 			|| this.claimMeta.getModerators().contains(user)
 			|| this.claimMeta.getOwners().contains(user) 
 		);
+	}
+
+	public boolean doesAllowBlockDamage() {
+		return this.claimMeta.doesAllowBlockDamage();
+	}
+
+	public boolean doesAllowFluidMovement() {
+		return this.claimMeta.doesAllowFluidMovement();
+	}
+
+	public boolean doesAllowPVP() {
+		return this.claimMeta.doesAllowPVP();
 	}
 }
