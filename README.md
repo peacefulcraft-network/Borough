@@ -1,7 +1,7 @@
 # Borough
 PCN Land Claim System
 
-# Key Concepts
+# Key Concepts of Borough
 Claim zones are sort of like plots. Each claim zone has it's own name and build permissions. Claim zones are made up of [Minecraft] chunks. These chunks can be all together, spread out, or both. 
 Claim zones
 protect against block breaking, external liquid flow (water/lava), external fire, external piston actions, and external explosions. An 'external' action is something that is triggered by someone or something that does not have build or destroy permissions in the claim zone.
