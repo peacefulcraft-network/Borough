@@ -18,10 +18,14 @@ public class BoroughClaimStore {
 	*/
 	protected Map<String, BoroughClaim> claimCache;
 	protected Map<String, BoroughChunk> chunkCache;
+	protected Map<UUID, List<String>> claimMembershipCache;
+	protected Map<UUID, List<BoroughChunkPermissionLevel>> claimPermissionsCache;
 
 	public BoroughClaimStore() {
 		this.claimCache = Collections.synchronizedMap(new HashMap<String, BoroughClaim>());
 		this.chunkCache = Collections.synchronizedMap(new HashMap<String, BoroughChunk>());
+		this.claimMembershipCache = Collections.synchronizedMap(new HashMap<UUID, List<String>>());
+		this.claimPermissionsCache = Collections.synchronizedMap(new HashMap<UUID, List<BoroughChunkPermissionLevel>>());
 	}
 
 	protected static String getClaimKey(String owner, String claimName) {
@@ -53,6 +57,11 @@ public class BoroughClaimStore {
 		this.chunkCache.remove(getChunkKey(world, x, z));
 	}
 
+	public void evictCachedUserData(UUID user) {
+		this.claimMembershipCache.remove(user);
+		this.claimPermissionsCache.remove(user);
+	}
+
 	/**
 	 * Creates a new named claim object. Performs blocking SQL work.
 	 * Inserts BoroughChunk object into cache
@@ -81,6 +90,10 @@ public class BoroughClaimStore {
 		BoroughClaim claim = getClaim(getClaimKey(username, claimName));
 		if (claim == null) {
 			claim = SQLQueries.createClaim(claimName, owner);
+
+			// TODO: Make async safe.
+			this.claimMembershipCache.get(owner).add(getClaimKey(username, claimName));
+			this.claimPermissionsCache.get(owner).add(BoroughChunkPermissionLevel.OWNER);
 		}
 
 		return claim;
@@ -97,7 +110,7 @@ public class BoroughClaimStore {
 			String[] nameParts = splitClaimKey(name);
 			UUID owner = Borough.getUUIDCache().usernameToUUID(nameParts[0]);
 			if (owner == null) {
-				throw new IllegalArgumentException("No known user " + nameParts[0]);
+				throw new IllegalArgumentException("No known user " + nameParts[0] + ".");
 			}
 
 			claim = SQLQueries.getBoroughClaim(nameParts[1], owner);
@@ -114,7 +127,16 @@ public class BoroughClaimStore {
 	 * @throws IllegalArgumentException It no claim called `name` exists.
 	 */
 	public void deleteClaim(String name) {
+		BoroughClaim claim = this.claimCache.get(name);
+		if (claim == null) {
+			throw new IllegalArgumentException("Unknown claim " + name + ". Delete failed");
+		}
 
+		SQLQueries.deleteClaim(claim);
+		claim.getChunks().forEach((chunk) -> {
+			chunk.setClaimMeta(null);
+		});
+		this.claimCache.remove(name).getChunks().clear();
 	}
 
 	/**
@@ -131,15 +153,16 @@ public class BoroughClaimStore {
 
 		if (chunk.getClaimMeta() == null) {
 		// Unclaimed, claim it and return
-			return SQLQueries.claimChunk(claim, chunk);
+			SQLQueries.claimChunk(claim, chunk);
+			claim.getChunks().add(chunk);
+			chunk.setClaimMeta(claim);
 
 		} else if (chunk.getClaimMeta() != claim) {
 		// Claimed by another claim zone
 			throw new IllegalArgumentException("Chunk is already claimed by claim " + claim.getClaimName());
-		} else {
-		// Already claimed, but by same claim zone as requested. Just return
-			return chunk;
 		}
+
+		return chunk;
 	}
 
 	/**
@@ -195,16 +218,43 @@ public class BoroughClaimStore {
 		else {
 			// claimed. Delete it.
 			SQLQueries.unclaimChunk(chunk);
+			chunk.getClaimMeta().getChunks().remove(chunk);
+			chunk.setClaimMeta(null);
 		}
 	}
 
 	/**
-	 * Get a list of all claims which this user has access to. Performs blocking SQL work.
+	 * Get a list of all claims which this user has access to. Performs **BLOCKING** SQL work.
 	 * 
 	 * @param user
+	 * @param permissionFilter Minium permission level to filter for. IE: Moderator will return all claims
+	 *                         where user has moderator or ownership permissions.
 	 * @return List of claim names which the user has access to at the requested permission level
 	 */
-	public List<String> getClaimsByUser(UUID user, BoroughChunkPermissionLevel permissionFilter) {
-		return new ArrayList<String>();
+	public List<String> getClaimNamesByUser(UUID user, BoroughChunkPermissionLevel permissionFilter) {
+		List<String> claimNames = this.claimMembershipCache.get(user);
+		List<BoroughChunkPermissionLevel> claimPerms = this.claimPermissionsCache.get(user);
+		
+		// Ask SQL if not in cache
+		if (claimNames == null || claimPerms == null) {
+			claimNames = new ArrayList<String>();
+			claimPerms = new ArrayList<BoroughChunkPermissionLevel>();
+			SQLQueries.getClaimsByUser(user, claimNames, claimPerms);
+		}
+
+		this.claimMembershipCache.put(user, Collections.synchronizedList(claimNames));
+		this.claimPermissionsCache.put(user, Collections.synchronizedList(claimPerms));
+
+		List<String> results = new ArrayList<String>();
+
+		for (int i=0; i<claimNames.size(); i++) {
+			Borough._this().logDebug("Considering claim " + claimNames.get(i) + " with permission " + claimPerms.get(i));
+			if (claimPerms.get(i).compareTo(permissionFilter) >= 0) {
+				Borough._this().logDebug("...cleared");
+				results.add(claimNames.get(i));
+			}
+		}
+		
+		return results;
 	}
 }

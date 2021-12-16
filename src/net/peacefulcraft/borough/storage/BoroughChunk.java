@@ -9,6 +9,7 @@ public class BoroughChunk {
 		 * @return Associated claim information or NULL of chunk is unclaimed
 		 */
 		public BoroughClaim getClaimMeta() { return this.claimMeta; }
+		public void setClaimMeta(BoroughClaim claim) { this.claimMeta = claim; }
 
 	private String world;
 		public String getWorld() { return this.world; }

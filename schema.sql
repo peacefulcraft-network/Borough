@@ -2,9 +2,9 @@
 -- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 172.16.1.10:3306
--- Generation Time: Dec 03, 2021 at 07:30 AM
--- Server version: 10.3.31-MariaDB-0ubuntu0.20.04.1-log
+-- Host: 172.16.2.10:3306
+-- Generation Time: Dec 15, 2021 at 11:58 PM
+-- Server version: 10.6.4-MariaDB-1:10.6.4+maria~focal
 -- PHP Version: 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `borough_test`
+-- Database: `s97_borough`
 --
 
 -- --------------------------------------------------------
@@ -30,7 +30,10 @@ SET time_zone = "+00:00";
 CREATE TABLE `claim` (
   `claim_id` bigint(20) UNSIGNED NOT NULL,
   `claim_name` varchar(50) NOT NULL,
-  `creator_uuid` char(36) NOT NULL
+  `creator_uuid` char(36) NOT NULL,
+  `allow_block_damage` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Natural block damage events (explosion, fire, etc)',
+  `allow_fluid_movement` tinyint(1) NOT NULL DEFAULT 1,
+  `allow_pvp` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
