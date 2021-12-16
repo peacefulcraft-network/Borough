@@ -55,7 +55,7 @@ public class UUIDCache {
 	public UUID usernameToUUID(String username) {
 		UUID uuid = usernameMap.get(username); 
 		
-		if (username == null) {
+		if (uuid == null) {
 			uuid = SQLQueries.getUUIDByUsername(username);
 			this.usernameMap.put(username, uuid);
 			this.uuidMap.put(uuid, username);

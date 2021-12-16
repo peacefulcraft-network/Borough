@@ -12,8 +12,13 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
 import net.peacefulcraft.borough.storage.BoroughChunk;
+import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.utilities.EntityHandler;
+
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,9 +34,21 @@ public class PlayerCacheEventListeners implements Listener {
 	 */
 	@EventHandler
 	public void onPlayerJoin(AsyncPlayerPreLoginEvent ev) {
+		// Store UUID:username
+		Borough._this().logDebug("Processing login for user " + ev.getUniqueId() + ". Requesting UUID mapping.");
 		Borough.getUUIDCache().cacheUUIDUsernameMapping(ev.getUniqueId(), ev.getName());
+
+		// Fetch claims to populate cache
+		Borough._this().logDebug("Processing login for user " + ev.getUniqueId() + ". Populating claim TC cache.");
+		List<String> claims = Borough.getClaimStore().getClaimNamesByUser(ev.getUniqueId(), BoroughChunkPermissionLevel.BUILDER);
+		claims.forEach((claim) -> { Borough._this().logDebug(claim); });
 	}
 	
+	public void onPlayerLeave(PlayerQuitEvent ev) {
+		Borough._this().logDebug("Processing logout for user " + ev.getPlayer().getName() + ". Requesting cache eviction.");
+		Borough.getClaimStore().evictCachedUserData(ev.getPlayer().getUniqueId());
+	}
+
 	@EventHandler
 	public void BlockBreakEventListener(BlockBreakEvent ev) {
 		Location loc = ev.getBlock().getLocation();
