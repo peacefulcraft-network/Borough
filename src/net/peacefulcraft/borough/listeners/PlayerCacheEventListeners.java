@@ -69,7 +69,7 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (ev.getBlock().getType().equals(Material.FIRE) && !chunk.doesAllowBlockDamage()) {
+		if (ev.getBlock().getType().equals(Material.FIRE) && chunk.isChunkClaimed() && !chunk.doesAllowBlockDamage()) {
 			Borough._this().logDebug("[PlayerCache] Cancel BlockPlaceEvent, Fire.");
 			ev.setCancelled(true);
 		}
