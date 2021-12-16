@@ -1,6 +1,7 @@
 package net.peacefulcraft.borough.storage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -256,5 +257,35 @@ public class BoroughClaimStore {
 		}
 		
 		return results;
+	}
+
+	/**
+	 * Main visualizer for chunk mapping
+	 * Generates message depicting nearby
+	 * claimed and unclaimed chunks
+	 * 
+	 * @param p Player we are fetching nearby
+	 */
+	public void visualizeChunks(Player p) {
+		
+		World world = p.getWorld();
+		int baseX = p.getLocation().getChunk().getX();
+		int baseZ = p.getLocation().getChunk().getZ();
+
+		HashMap<Integer, ArrayList<BoroughChunk>> chunksAroundPlayer = new HashMap<>();
+		for (int x = -5; x <= 5; x++) {
+			for (int z = -5; x <= 5; z++) {
+				BoroughChunk chunk = getChunk(world.getName(), x, z);
+				
+				int id = -1 ? chunk.isChunkClaimed() : chunk.getClaimMeta().getClaimId();
+
+				if (!chunksAroundPlayer.containsKey(id)) {
+					chunksAroundPlayer.put(id, new ArrayList<>());
+				}
+				chunksAroundPlayer.get(id).add(chunk);
+			}
+		}
+
+		//TODO: Filter map into chat message
 	}
 }
