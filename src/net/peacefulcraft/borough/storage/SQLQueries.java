@@ -237,7 +237,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("REPLACE INTO `claim_chunk` VALUES(?,?,?)");
+			PreparedStatement stmt = mysql.prepareStatement("REPLACE INTO `claim_permission` VALUES(?,?,?)");
 			stmt.setString(1, user.toString());
 			stmt.setInt(2, claim.getClaimId());
 			stmt.setString(3, level.toString());

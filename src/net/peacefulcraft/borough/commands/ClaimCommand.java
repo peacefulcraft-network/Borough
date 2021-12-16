@@ -276,7 +276,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
 
 										// Already have perms or add new perms does not matter. Just report success
-										try { claim.addModerator(uuid); }
+										try { claim.addOwner(uuid);}
 										catch (IllegalArgumentException ex) {}
 
 										Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
@@ -316,27 +316,22 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
 
 										// If it's a moderator trying to remove an admin, block the request
-										if (claim.getModerators().contains(p.getUniqueId())) {
-											sender.sendMessage(Borough.messagingPrefix + "User " + username + " is an administrator. Only any other administrator can remove their permissions.");
+										if (claim.getModerators().contains(p.getUniqueId()) && claim.getOwners().contains(uuid) == true) {
+											Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
+												sender.sendMessage(Borough.messagingPrefix + "User " + username + " is an administrator. Only any other administrator can remove their permissions.");
+											});
+											return;
 										} else {
 											// TOOD: Make better
 											// Check them all incase the user got double added
-											if (claim.getBuilders().contains(uuid)) {
-												claim.removeBuilder(uuid);
-											}
-
-											if (claim.getModerators().contains(uuid)) {
-												claim.removeModerator(uuid);
-											}
-
-											if (claim.getOwners().contains(uuid)) {
-												claim.removeOwner(uuid);
-											}
+											claim.removeBuilder(uuid);
+											claim.removeModerator(uuid);
+											claim.removeOwner(uuid);
+										
+											Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
+												sender.sendMessage(Borough.messagingPrefix + "Removed " + username + " permissions to claim " + args[1]);
+											});
 										}
-
-										Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
-											sender.sendMessage(Borough.messagingPrefix + "Removed " + username + " permissions to claim " + args[1]);
-										});
 									}
 								} catch (RuntimeException ex) {
 									sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to modify permissions on claim " + args[1] + ". Please try again. Contact staff if the issue persists.");

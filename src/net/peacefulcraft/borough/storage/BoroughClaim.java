@@ -89,12 +89,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk owner.
 	 */
 	public void addOwner(UUID owner) {
-		if (this.owners.contains(owner)) {
-			throw new IllegalArgumentException("User is already a chunk owner.");
-		}
-
-		this.owners.add(owner);
 		SQLQueries.setPermissionsOnClaim(this, owner, BoroughChunkPermissionLevel.OWNER);
+		this.owners.add(owner);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(owner, BoroughChunkPermissionLevel.BUILDER);
@@ -108,10 +104,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk owner.
 	 */
 	public void removeOwner(UUID owner) {
-		if (this.owners.contains(owner)) {
-			throw new IllegalArgumentException("User is not a chunk owner.");
-		}
 		SQLQueries.unsetPermissionsOnClaim(this, owner);
+		this.owners.remove(owner);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(owner, BoroughChunkPermissionLevel.BUILDER);
@@ -125,10 +119,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk moderator.
 	 */
 	public void addModerator(UUID moderator) {
-		if (this.moderators.contains(moderator)) {
-			throw new IllegalArgumentException("User is already a chunk moderator.");
-		}
 		SQLQueries.setPermissionsOnClaim(this, moderator, BoroughChunkPermissionLevel.MODERATOR);
+		this.moderators.add(moderator);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(moderator, BoroughChunkPermissionLevel.BUILDER);
@@ -142,10 +134,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk moderator.
 	 */
 	public void removeModerator(UUID moderator) {
-		if (this.moderators.contains(moderator)) {
-			throw new IllegalArgumentException("User is not a chunk moderator.");
-		}
 		SQLQueries.unsetPermissionsOnClaim(this, moderator);
+		this.moderators.remove(moderator);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(moderator, BoroughChunkPermissionLevel.BUILDER);
@@ -159,10 +149,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk builder.
 	 */
 	public void addBuilder(UUID builder) {
-		if (this.builders.contains(builder)) {
-			throw new IllegalArgumentException("User is already a chunk builder.");
-		}
 		SQLQueries.setPermissionsOnClaim(this, builder, BoroughChunkPermissionLevel.BUILDER);
+		this.builders.add(builder);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(builder, BoroughChunkPermissionLevel.BUILDER);
@@ -176,10 +164,8 @@ public class BoroughClaim {
 	 * @throws IllegalArgumentException If user is already a chunk builder.
 	 */
 	public void removeBuilder(UUID builder) {
-		if (this.builders.contains(builder)) {
-			throw new IllegalArgumentException("User is not a chunk builder.");
-		}
 		SQLQueries.unsetPermissionsOnClaim(this, builder);
+		this.builders.remove(builder);
 
 		// Trigger cache update
 		Borough.getClaimStore().getClaimNamesByUser(builder, BoroughChunkPermissionLevel.BUILDER);
