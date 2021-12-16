@@ -1,12 +1,13 @@
 package net.peacefulcraft.borough.utilities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.EntityType;
 
 public class EntityHandler {
 	
-	private static List<EntityType> passives;
+	private static List<EntityType> passives = new ArrayList<>();
 
 	public static boolean isPassive(EntityType type) { return passives.contains(type); }
 
