@@ -12,13 +12,21 @@ Claim Administrators are users that have permission to build, destroy, give and 
 
 # Commands
 /claim create [claim-name] creates a new claim zone called claim-name. The chunk you're standing in is automatically added to the claim.
+
 /claim extend [claim-name] claims the chunk you're currently standing in, adding it to the claim with name claim-name.
+
 /unclaim unclaims the chunk you're currently standing in.
+
 /claim delete [claim-name] unclaims all chunks in claim claim-name and deletes the claim zone.
+
 /claim info [claim-name] shows information about claim claim-name, such as user permissions and chunk locations.
+
 /claim add-builder [claim-name] [username] grants username builder access to claim claim-name. (build and destroy permissions on blocks in the claim zone).
+
 /claim add-moderator [claim-name] [username] grants username moderator access to claim claim-name. (builder, /claim add-builder, and /claim remove-builder).
+
 /claim add-admin [claim-name] [username] grants username admin access to claim claim-name. (builder, mod, and /claim extend and /unclaim permissions).
+
 claim remove-user [claim-name] [username] removes username's permissions to claim claim-name
 
 [Taken From https://www.peacefulcraft.net/flarum/d/196-how-to-land-claiming]
