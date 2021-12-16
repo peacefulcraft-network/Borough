@@ -66,6 +66,10 @@
                                 <pattern>org.slf4j</pattern>
                                 <shadedPattern>net.peacefulcraft.shaded.slf4j</shadedPattern>
                             </relocation>
+			               <relocation>
+                                <pattern>org.mariadb.jdbc</pattern>
+                                <shadedPattern>net.peacefulcraft.shaded.mariadb</shadedPattern>
+                            </relocation>
                         </relocations>
                     </configuration>
                 </execution>
@@ -107,5 +111,10 @@
             <artifactId>HikariCP</artifactId>
             <version>3.4.2</version>
         </dependency>
+		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<version>2.1.2</version>
+		</dependency>
     </dependencies>
 </project>
