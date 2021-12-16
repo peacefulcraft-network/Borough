@@ -1,7 +1,12 @@
 # Borough
 PCN Land Claim System
 
-# Usage
+# Commands
+
+
+# Permissions
+
+# Deveo90er Usage
 - This template is tailored of usage in VSCode. You should be prompted to install some VSCode extensions when you open the repo in VSCode to facilitate Java development. This template will still work in other IDEs and you can delete the `.vscode` folder if you don't plan to use VSCode.
 - Install Java and Maven if you don't already have them installed. Google for tutorials on how to do this if you're not sure how.
 - `pom.xml`
