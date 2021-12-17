@@ -29,14 +29,14 @@ public class BoroughClaim {
 		public List<BoroughChunk> getChunks() { return this.chunks; }
 
 	private List<UUID> owners;
-		public List<UUID> getOwners() { return Collections.unmodifiableList(this.owners); }
+		public List<UUID> getOwners() { return this.owners; }
 		public String getCreatorUsername() {
 			return Borough.getUUIDCache().uuidToUsername(this.owners.get(0));
 		}
 	private List<UUID> moderators;
-		public List<UUID> getModerators() { return Collections.unmodifiableList(this.moderators); }
+		public List<UUID> getModerators() { return this.moderators; }
 	private List<UUID> builders;
-		public List<UUID> getBuilders() { return Collections.unmodifiableList(this.builders); }
+		public List<UUID> getBuilders() { return this.builders; }
 
 	private Boolean allowBlockDamage;
 		public Boolean doesAllowBlockDamage() { return this.allowBlockDamage; }
