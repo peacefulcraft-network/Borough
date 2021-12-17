@@ -28,7 +28,7 @@ public class BoroughChunk {
 		public int getChunkZ() { return this.z; }
 
 	public BoroughChunk(String claimKey, String world, int x, int z) {
-		this.claimKey = "";
+		this.claimKey = claimKey;
 		this.world = world;
 		this.x = x;
 		this.z = z;

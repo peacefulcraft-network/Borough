@@ -192,13 +192,13 @@ public class SQLQueries {
 			Borough._this().logDebug("Found chunk with owner (" + world + "," + x + "," + z + ") " + ownerUsername);
 			if (ownerUsername == null) {
 			// unclaimed
-				return new BoroughChunk(null, world, x, z);
+				return new BoroughChunk("", world, x, z);
 
 			} else {
 			// claimed
-				String claimName = ownerUsername + ":" + result.getString("claim_name");
-				BoroughClaim claimMeta = Borough.getClaimStore().getClaim(claimName);
-				BoroughChunk chunk = new BoroughChunk(BoroughClaimStore.getClaimKey(ownerUsername, claimName), result.getString("world"), result.getInt("x"), result.getInt("z"));
+				String claimKey = BoroughClaimStore.getClaimKey(ownerUsername, result.getString("claim_name"));
+				BoroughClaim claimMeta = Borough.getClaimStore().getClaim(claimKey);
+				BoroughChunk chunk = new BoroughChunk(claimKey, result.getString("world"), result.getInt("x"), result.getInt("z"));
 				claimMeta.getChunks().add(chunk);
 
 				return chunk;

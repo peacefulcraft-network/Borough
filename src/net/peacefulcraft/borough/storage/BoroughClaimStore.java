@@ -262,7 +262,7 @@ public class BoroughClaimStore {
 
 		// Doesn't exist. Return wrapper with null claim meta.
 		if (chunk == null) {
-			chunk = new BoroughChunk(null, world, x, z);
+			chunk = new BoroughChunk("", world, x, z);
 			synchronized(this.chunkCache) {
 				this.chunkCache.put(getChunkKey(world, x, z), chunk);
 			}
