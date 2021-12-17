@@ -2,42 +2,26 @@
 The PCN Land Claim System
 
 # Key Concepts of Borough
-- Claim zones are sort of like plots. Each claim zone has it's own name and build permissions. Claim zones are made up of [Minecraft] chunks. These chunks can be all together,  -  spread out, or both. 
-
-- Claim zones
-- protect against block breaking, external liquid flow (water/lava), external fire, external piston actions, and external explosions. An 'external' action is something that is   triggered by someone or something that does not have build or destroy permissions in the claim zone.
-
+- Claim zones are sort of like plots. Each claim zone has it's own name and build permissions. Claim zones are made up of Minecraft chunks. These chunks can be all together, spread out, or both. 
+- Claimed chunks protect against block breaking, external liquid flow (water/lava), external fire, external piston actions, and external explosions. An 'external' action is something that is triggered by someone or something that does not have build or destroy permissions in the claim zone.
 - Claim Builders are users that have permission to build and destroy in a claim.
-
 - Claim Moderators are users that have permission to build, destroy, and give and take other people's build permissions on that claim.
-
 - Claim Administrators are users that have permission to build, destroy, give and take other people's build permissions on that claim, and /claim extend and /unclaim land on     that claim.
 
-[Taken From https://www.peacefulcraft.net/flarum/d/196-how-to-land-claiming]
 # Commands
-/claim create [claim-name] creates a new claim zone called claim-name. The chunk you're standing in is automatically added to the claim.
-
-/claim extend [claim-name] claims the chunk you're currently standing in, adding it to the claim with name claim-name.
-
-/unclaim unclaims the chunk you're currently standing in.
-
-/claim delete [claim-name] unclaims all chunks in claim claim-name and deletes the claim zone.
-
-/claim info [claim-name] shows information about claim claim-name, such as user permissions and chunk locations.
-
-/claim add-builder [claim-name] [username] grants username builder access to claim claim-name. (build and destroy permissions on blocks in the claim zone).
-
-/claim add-moderator [claim-name] [username] grants username moderator access to claim claim-name. (builder, /claim add-builder, and /claim remove-builder).
-
-/claim add-admin [claim-name] [username] grants username admin access to claim claim-name. (builder, mod, and /claim extend and /unclaim permissions).
-
-claim remove-user [claim-name] [username] removes username's permissions to claim claim-name
-
-[Taken From https://www.peacefulcraft.net/flarum/d/196-how-to-land-claiming]
-
+- `/claim create [claim-name]` creates a new claim zone called claim-name. The chunk you're standing in is automatically added to the claim.
+- `/claim extend [claim-name]` claims the chunk you're currently standing in, adding it to the claim with name claim-name.
+- `/unclaim` unclaims the chunk you're currently standing in.
+- `/claim delete [claim-name]` unclaims all chunks in claim claim-name and deletes the claim zone.
+- `/claim info [claim-name]` shows information about claim claim-name, such as user permissions and chunk locations.
+- `/claim add-builder [claim-name] [username]` grants username builder access to claim claim-name. (build and destroy permissions on blocks in the claim zone).
+- `/claim add-moderator [claim-name] [username]` grants username moderator access to claim claim-name. (builder, /claim add-builder, and /claim remove-builder).
+- `/claim add-admin [claim-name] [username]` grants username admin access to claim claim-name. (builder, mod, and /claim extend and /unclaim permissions).
+- `/claim remove-user [claim-name] [username]` removes username's permissions to claim claim-name
+- `/claim tp [claim-name]`
 
 # Permissions
-[NEEDS UPDATE]
+- `pcn.staff` for access to `/boroughadmin` and to other user's claims.
 
 # Deveoper Usage
 - This template is tailored of usage in VSCode. You should be prompted to install some VSCode extensions when you open the repo in VSCode to facilitate Java development. This template will still work in other IDEs and you can delete the `.vscode` folder if you don't plan to use VSCode.
@@ -59,8 +43,3 @@ claim remove-user [claim-name] [username] removes username's permissions to clai
 - Open your OS' command terminal and navigate to this project's folder ( folder with `src`, `pom.xml`, `README.md`, etc ).
 - Type `mvn package`
 - Once the command is complete, there will be a jar file in `target\[<artifactId>]-[version].jar`
-
-  For questions, comments, or suggestions on this repo or Bukkit plugin development in general:
-  - https://spigotmc.org
-  - https://bukkit.org
-  - https://www.peacefulcraft.net/flarum/t/github
