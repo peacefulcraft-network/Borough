@@ -41,6 +41,7 @@ public class UUIDCache {
 	 * @return NULL if no mapping is known. String if username is found.
 	 */
 	public String uuidToUsername(UUID uuid) {
+		if (uuid == null) { return null; }
 		String username = uuidMap.get(uuid); 
 		
 		if (username == null) {
