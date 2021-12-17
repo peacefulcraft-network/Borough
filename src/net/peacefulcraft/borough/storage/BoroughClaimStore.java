@@ -1,13 +1,19 @@
 package net.peacefulcraft.borough.storage;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
+import java.util.Map.Entry;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Player;
+
 import net.peacefulcraft.borough.Borough;
 
 public class BoroughClaimStore {
@@ -273,19 +279,43 @@ public class BoroughClaimStore {
 		int baseZ = p.getLocation().getChunk().getZ();
 
 		HashMap<Integer, ArrayList<BoroughChunk>> chunksAroundPlayer = new HashMap<>();
+		HashMap<Integer, ChatColor> colorMap = new HashMap<>();
+		Random r = new Random();
+		String message = "";
+
+		colorMap.put(-1, ChatColor.GRAY);
+
 		for (int x = -5; x <= 5; x++) {
-			for (int z = -5; x <= 5; z++) {
+			for (int z = -5; z <= 5; z++) {
 				BoroughChunk chunk = getChunk(world.getName(), x, z);
 				
-				int id = -1 ? chunk.isChunkClaimed() : chunk.getClaimMeta().getClaimId();
+				int id = chunk.isChunkClaimed() ? chunk.getClaimMeta().getClaimId() : -1;
 
 				if (!chunksAroundPlayer.containsKey(id)) {
 					chunksAroundPlayer.put(id, new ArrayList<>());
 				}
 				chunksAroundPlayer.get(id).add(chunk);
+
+				if (!colorMap.containsKey(id)) {
+					colorMap.put(id, ChatColor.values()[r.nextInt(ChatColor.values().length - 1)]);
+				}
+
+				String c = id == -1 ? "O" : "X";
+				message += colorMap.get(id) + c;
+
+				if (z == 5) { message += "\n"; }
 			}
 		}
 
-		//TODO: Filter map into chat message
+		message += "Key: \n";
+		for (Entry<Integer, ArrayList<BoroughChunk>> entry : chunksAroundPlayer.entrySet()) {
+			int id = entry.getKey();
+			BoroughChunk chunk = entry.getValue().get(0);
+
+			if (id == -1) { continue; }
+			message += colorMap.get(id) + chunk.getClaimMeta().getClaimName() + "\n";
+		}
+
+		p.sendMessage(Borough.messagingPrefix + message);
 	}
 }
