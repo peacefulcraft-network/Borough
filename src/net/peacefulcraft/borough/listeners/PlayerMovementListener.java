@@ -60,7 +60,7 @@ public class PlayerMovementListener implements Listener {
 				// Player probably just appeared in world. Tell them where they are.
 				BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
 				if (toChunk.isChunkClaimed()) {
-					sendAction(p, "Entered " + toChunk.getClaimMeta().getClaimName());
+					sendAction(p, ChatColor.GREEN + "Entered " + toChunk.getClaimMeta().getCreatorUsername() + "'s claim: " + toChunk.getClaimMeta().getClaimName());
 				}
 			});
 		}

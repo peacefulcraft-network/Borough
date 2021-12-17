@@ -56,7 +56,7 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel BlockBreakEvent.");
 			ev.setCancelled(true);
 		}
@@ -74,7 +74,7 @@ public class PlayerCacheEventListeners implements Listener {
 			ev.setCancelled(true);
 		}
 
-		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel BlockBreakEvent.");
 			ev.setCancelled(true);
 		}
@@ -89,7 +89,7 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEvent.");
 			ev.setCancelled(true);
 		}
