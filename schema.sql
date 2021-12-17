@@ -2,9 +2,9 @@
 -- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 172.16.1.10:3306
--- Generation Time: Dec 01, 2021 at 08:11 AM
--- Server version: 10.3.31-MariaDB-0ubuntu0.20.04.1-log
+-- Host: 172.16.2.10:3306
+-- Generation Time: Dec 15, 2021 at 11:58 PM
+-- Server version: 10.6.4-MariaDB-1:10.6.4+maria~focal
 -- PHP Version: 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `borough_test`
+-- Database: `s97_borough`
 --
 
 -- --------------------------------------------------------
@@ -29,8 +29,11 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `claim` (
   `claim_id` bigint(20) UNSIGNED NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `creator_uuid` char(36) NOT NULL
+  `claim_name` varchar(50) NOT NULL,
+  `creator_uuid` char(36) NOT NULL,
+  `allow_block_damage` tinyint(1) NOT NULL DEFAULT 1 COMMENT 'Natural block damage events (explosion, fire, etc)',
+  `allow_fluid_movement` tinyint(1) NOT NULL DEFAULT 1,
+  `allow_pvp` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -54,8 +57,19 @@ CREATE TABLE `claim_chunk` (
 
 CREATE TABLE `claim_permission` (
   `user_uuid` char(36) NOT NULL,
-  `chunk_id` bigint(20) UNSIGNED NOT NULL,
+  `claim_id` bigint(20) UNSIGNED NOT NULL,
   `level` enum('OWNER','MODERATOR','BUILDER') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `uuid_cache`
+--
+
+CREATE TABLE `uuid_cache` (
+  `UUID` char(36) NOT NULL,
+  `username` varchar(16) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -79,8 +93,15 @@ ALTER TABLE `claim_chunk`
 -- Indexes for table `claim_permission`
 --
 ALTER TABLE `claim_permission`
-  ADD UNIQUE KEY `user_uuid` (`user_uuid`,`chunk_id`,`level`),
-  ADD KEY `chunk_id` (`chunk_id`);
+  ADD UNIQUE KEY `user_uuid` (`user_uuid`,`claim_id`,`level`),
+  ADD KEY `chunk_id` (`claim_id`);
+
+--
+-- Indexes for table `uuid_cache`
+--
+ALTER TABLE `uuid_cache`
+  ADD PRIMARY KEY (`UUID`),
+  ADD KEY `username` (`username`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -106,7 +127,7 @@ ALTER TABLE `claim_chunk`
 -- Constraints for table `claim_permission`
 --
 ALTER TABLE `claim_permission`
-  ADD CONSTRAINT `chunk_id` FOREIGN KEY (`chunk_id`) REFERENCES `claim` (`claim_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `chunk_id` FOREIGN KEY (`claim_id`) REFERENCES `claim` (`claim_id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
