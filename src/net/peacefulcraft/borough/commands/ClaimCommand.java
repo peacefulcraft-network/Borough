@@ -121,7 +121,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 
 									// Go back to Bukkit land to do Bukkit things
 									Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
-										sender.sendMessage(Borough.messagingPrefix + "Succesfully extended claim " + args[1] + " to the chunk you were standing in.");
+										sender.sendMessage(Borough.messagingPrefix + "Succesfully deleted claim " + args[1] + ".");
 									});
 								} catch (RuntimeException ex) {
 									sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to delete claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
@@ -129,7 +129,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									ex.printStackTrace();
 								}
 						} else {
-							sender.sendMessage(Borough.messagingPrefix + "Will delete ALL chunk claims apart of " + args[1] + ". To confirm run " + ChatColor.GOLD + "/claim delete " + args[1] + "confirm");
+							sender.sendMessage(Borough.messagingPrefix + "Will delete ALL chunk claims apart of " + args[1] + ". To confirm run " + ChatColor.GOLD + "/claim delete " + args[1] + " confirm");
 						}
 					});
 				} else {
@@ -469,7 +469,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR));
 					} else if (args[0].equalsIgnoreCase("add-moderator") || args[0].equalsIgnoreCase("add-admin")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER));
-					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") ){
+					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("extend")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER));
 					}
 					this.argMatch(opts, args[1]);
