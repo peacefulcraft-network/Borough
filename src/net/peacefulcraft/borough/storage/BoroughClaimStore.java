@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import org.bukkit.Location;
 import net.peacefulcraft.borough.Borough;
@@ -17,9 +18,15 @@ public class BoroughClaimStore {
 		return whatever the query is supposed to provide.
 	*/
 	private Map<String, BoroughClaim> claimCache;
+		public synchronized int getClaimCacheSize() { return claimCache.size(); }
+		public synchronized Set<String> getClaimCacheKeys() { return claimCache.keySet(); }
 	private Map<String, BoroughChunk> chunkCache;
 	private Map<UUID, List<String>> claimMembershipCache;
+		public synchronized int getMemberCacheSize() { return claimMembershipCache.size(); }
+		public synchronized Set<UUID> getMemberCacheKeys() { return claimMembershipCache.keySet(); }
 	private Map<UUID, List<BoroughChunkPermissionLevel>> claimPermissionsCache;
+		public synchronized int getPermissionCacheSize() { return claimPermissionsCache.size(); }
+		public synchronized Set<UUID> getPermissionCacheKeys() { return claimPermissionsCache.keySet(); }
 
 	public BoroughClaimStore() {
 		this.claimCache = new HashMap<String, BoroughClaim>();
@@ -98,11 +105,21 @@ public class BoroughClaimStore {
 			claim = SQLQueries.createClaim(claimName, owner);
 
 			synchronized(this.claimMembershipCache) {
-				this.claimMembershipCache.get(owner).add(getClaimKey(username, claimName));
+				List<String> claimMemberships = this.claimMembershipCache.get(owner);
+				if (claimMemberships == null) {
+					// pull users stuff if we somehow don't already have it
+					this.getClaimNamesByUser(owner, BoroughChunkPermissionLevel.BUILDER);
+					claimMemberships = this.claimMembershipCache.get(owner);
+				}
 			
 				// Nest this sync so we ensure indexs match
 				synchronized(this.claimMembershipCache) {
-					this.claimPermissionsCache.get(owner).add(BoroughChunkPermissionLevel.OWNER);				
+					List<BoroughChunkPermissionLevel> claimPermission = this.claimPermissionsCache.get(owner);
+					if (claimPermission == null) {
+						claimPermission = Collections.synchronizedList(new ArrayList<BoroughChunkPermissionLevel>());
+						this.claimPermissionsCache.put(owner, claimPermission);
+					}
+					claimPermission.add(BoroughChunkPermissionLevel.OWNER);			
 				}
 			}
 		}
@@ -119,24 +136,29 @@ public class BoroughClaimStore {
 		BoroughClaim claim = null;
 		synchronized(this.claimCache) {
 			claim = this.claimCache.get(name);
-		}		
-		if (claim == null) {
-			String[] nameParts = splitClaimKey(name);
-			UUID owner = Borough.getUUIDCache().usernameToUUID(nameParts[0]);
-			if (owner == null) {
-				throw new IllegalArgumentException("No known user " + nameParts[0] + ".");
-			}
+		}
 
+		String[] nameParts = splitClaimKey(name);
+		UUID owner = Borough.getUUIDCache().usernameToUUID(nameParts[0]);
+		if (owner == null) {
+			throw new IllegalArgumentException("No known user " + nameParts[0] + ".");
+		}
+
+		if (claim == null) {
+			claim = SQLQueries.getBoroughClaim(nameParts[1], owner);
 			synchronized(this.claimCache) {
 				// Other threads may have been fetching while we were.
 				// If they beat us, yeild and use their objects.
 				BoroughClaim winner = this.claimCache.get(getClaimKey(nameParts[0], nameParts[1]));
 				if (winner == null) {
-					claim = SQLQueries.getBoroughClaim(nameParts[1], owner);
 					claimCache.put(getClaimKey(nameParts[0], nameParts[1]), claim);
 				} else {
 					return winner;
 				}
+			}
+		} else {
+			synchronized(this.claimCache) {
+				this.claimCache.put(getClaimKey(nameParts[0], nameParts[1]), claim);
 			}
 		}
 
@@ -151,7 +173,12 @@ public class BoroughClaimStore {
 	 * @throws IllegalArgumentException It no claim called `name` exists.
 	 */
 	public void deleteClaim(String name) {
-		BoroughClaim claim = this.claimCache.get(name);
+		Borough._this().logDebug("Received delete request for claim " + name);
+		BoroughClaim claim;
+		synchronized(this.claimCache) {
+			claim = this.getClaim(name);
+		}
+		
 		if (claim == null) {
 			throw new IllegalArgumentException("Unknown claim " + name + ". Delete failed");
 		}
@@ -170,7 +197,7 @@ public class BoroughClaimStore {
 			claim.getBuilders().forEach((uuid) -> {
 				this.getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER);
 			});
-			claim.getBuilders().clear();
+			claim.getBuilders().clear();;
 
 			claim.getModerators().forEach((uuid) -> {
 				this.getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER);
@@ -228,6 +255,9 @@ public class BoroughClaimStore {
 		// Check DB
 		if (chunk == null) {
 			chunk = SQLQueries.getBoroughChunk(world, x, z);
+			synchronized(this.chunkCache) {
+				this.chunkCache.put(getChunkKey(world, x, z), chunk);
+			}
 		}
 
 		// Doesn't exist. Return wrapper with null claim meta.

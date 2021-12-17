@@ -474,6 +474,15 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					}
 					this.argMatch(opts, args[1]);
 					break;
+				case 3:
+					if (args[0].equalsIgnoreCase("add-builder") || args[0].equalsIgnoreCase("add-moderator") || args[0].equalsIgnoreCase("add-admin")) {
+						Borough._this().getServer().getOnlinePlayers().forEach((player) -> {
+							opts.add(player.getName());
+						});
+					} else if (args[0].equalsIgnoreCase("remove-user")) {
+						BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+						// UUID => usernames
+					}
 			}	
 		}
 
