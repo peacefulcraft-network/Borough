@@ -11,6 +11,7 @@ The PCN Land Claim System
 # Commands
 - `/claim create [claim-name]` creates a new claim zone called claim-name. The chunk you're standing in is automatically added to the claim.
 - `/claim extend [claim-name]` claims the chunk you're currently standing in, adding it to the claim with name claim-name.
+- `/claim list` shows all the claims you've created or have at least build access on.
 - `/unclaim` unclaims the chunk you're currently standing in.
 - `/claim delete [claim-name]` unclaims all chunks in claim claim-name and deletes the claim zone.
 - `/claim info [claim-name]` shows information about claim claim-name, such as user permissions and chunk locations.
