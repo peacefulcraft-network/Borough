@@ -454,7 +454,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										sender.sendMessage(Borough.messagingPrefix + "There are no chunks in claim " + args[1]);
 									} else {
 										sender.sendMessage(Borough.messagingPrefix + "Teleporting to claim " + args[1]);
-										Location loc = new Location(Borough._this().getServer().getWorld(claim.getChunks().get(0).getWorld()), (double) claim.getChunks().get(0).getChunkX() * 16, 300.0, (double) claim.getChunks().get(0).getChunkX() * 16);
+										Location loc = new Location(Borough._this().getServer().getWorld(claim.getChunks().get(0).getWorld()), (double) claim.getChunks().get(0).getChunkX() * 16, 300.0, (double) claim.getChunks().get(0).getChunkZ() * 16);
 										p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 255));
 										p.teleport(loc);
 									}
