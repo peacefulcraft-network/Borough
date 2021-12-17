@@ -1,13 +1,17 @@
 package net.peacefulcraft.borough.listeners;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.peacefulcraft.borough.Borough;
@@ -15,37 +19,70 @@ import net.peacefulcraft.borough.storage.BoroughChunk;
 
 public class PlayerMovementListener implements Listener {
 	
-	private HashMap<UUID, Long> playerMap = new HashMap<>();
+	private Map<UUID, HistoricalMoveEvent> playerMap = Collections.synchronizedMap(new HashMap<UUID, HistoricalMoveEvent>());
 
 	@EventHandler
 	public void MovementListener(PlayerMoveEvent ev) {
 		Long currentTime = System.currentTimeMillis();
 		Player p = ev.getPlayer();
 		UUID id = p.getUniqueId();
+ 
+		// Check if we've dealth with this player before
+		if (playerMap.containsKey(id)) {
+			// Check if it has been sufficiently long since we've check player movement
+			if ((playerMap.get(id).lastCheckRun - currentTime) < 2000) {
+				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					HistoricalMoveEvent from = playerMap.get(id);
+					BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
 
-		// If key exists and time difference is > 2 seconds
-		// OR if key does not exist
-		// We process lookup
-		if (!playerMap.containsKey(id) || (playerMap.containsKey(id) && (playerMap.get(id) - currentTime) > 2000)) {
-			playerMap.put(id, System.currentTimeMillis());
-			// Async task call to lookup cache
+					// Check if player has moved between claims since the last time we told them their location.
+					if (!from.fromChunk.isChunkClaimed() && toChunk.isChunkClaimed()) {
+						// 1. From not claimed. To claimed
+						sendAction(p, ChatColor.GREEN + "Entered " + toChunk.getClaimMeta().getCreatorUsername() + "'s claim: " + toChunk.getClaimMeta().getClaimName());
+					} else if (from.fromChunk.isChunkClaimed() && !toChunk.isChunkClaimed()) {
+						// 1.5 Exiting claim, going into unclaimed land.
+						sendAction(p, ChatColor.GRAY + "Entered Unclaimed Territory");
+					} else if(from.fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() && from.fromChunk.getClaimMeta().getClaimId() != toChunk.getClaimMeta().getClaimId()) {
+						// 2. Both claimed. Compare ids to confirm no match
+						sendAction(p, ChatColor.GREEN + "Entered " + toChunk.getClaimMeta().getCreatorUsername() + "'s claim: " + toChunk.getClaimMeta().getClaimName());
+					}
+
+					from.lastCheckRun = currentTime;
+					from.fromChunk = toChunk;
+				});
+			}
+		// new player, initialize datastructures
+		} else {
 			Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
 				BoroughChunk fromChunk = Borough.getClaimStore().getChunk(ev.getFrom());
-				BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
+				playerMap.put(id, new HistoricalMoveEvent(fromChunk, currentTime));
 
-				Borough._this().logDebug("[Player Move] Task Run.");
-				if (!fromChunk.isChunkClaimed() && toChunk.isChunkClaimed()) {
-					// 1. From not claimed. To claimed
-					sendAction(p, "Entered " + toChunk.getClaimMeta().getClaimName());
-				} else if(fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() && fromChunk.getClaimMeta().getClaimId() != toChunk.getClaimMeta().getClaimId()) {
-					// 2. Both claimed. Compare ids to confirm no match
+				// Player probably just appeared in world. Tell them where they are.
+				BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
+				if (toChunk.isChunkClaimed()) {
 					sendAction(p, "Entered " + toChunk.getClaimMeta().getClaimName());
 				}
 			});
-		} 
+		}
 	}
 
 	private void sendAction(Player p, String message) {
 		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+	}
+
+	private class HistoricalMoveEvent {
+		public BoroughChunk fromChunk;
+		public Long lastCheckRun;
+
+		public HistoricalMoveEvent(BoroughChunk fromChunk, Long lastCheckRun) {
+			this.fromChunk = fromChunk;
+			this.lastCheckRun = lastCheckRun;
+		}
+	}
+
+	@EventHandler
+	public void PlayerDisconnectListener(PlayerQuitEvent ev) {
+		// Remove player from map so the UUID + Chunk can be garbage collected.
+		playerMap.remove(ev.getPlayer().getUniqueId());
 	}
 }

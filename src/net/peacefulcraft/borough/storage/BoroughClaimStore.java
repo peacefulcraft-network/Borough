@@ -327,9 +327,7 @@ public class BoroughClaimStore {
 		List<String> results = new ArrayList<String>();
 
 		for (int i=0; i<claimNames.size(); i++) {
-			Borough._this().logDebug("Considering claim " + claimNames.get(i) + " with permission " + claimPerms.get(i));
 			if (claimPerms.get(i).compareTo(permissionFilter) >= 0) {
-				Borough._this().logDebug("...cleared");
 				results.add(claimNames.get(i));
 			}
 		}
