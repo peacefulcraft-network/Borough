@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 import java.util.Map.Entry;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -28,11 +30,20 @@ public class BoroughClaimStore {
 	protected Map<UUID, List<String>> claimMembershipCache;
 	protected Map<UUID, List<BoroughChunkPermissionLevel>> claimPermissionsCache;
 
+	/*
+		Player profile maps
+	*/
+	protected Map<UUID, BoroughPlayer> preprocessedPlayers;
+	protected Map<UUID, BoroughPlayer> players;
+
 	public BoroughClaimStore() {
 		this.claimCache = Collections.synchronizedMap(new HashMap<String, BoroughClaim>());
 		this.chunkCache = Collections.synchronizedMap(new HashMap<String, BoroughChunk>());
 		this.claimMembershipCache = Collections.synchronizedMap(new HashMap<UUID, List<String>>());
 		this.claimPermissionsCache = Collections.synchronizedMap(new HashMap<UUID, List<BoroughChunkPermissionLevel>>());
+
+		this.preprocessedPlayers = Collections.synchronizedMap(new HashMap<UUID, BoroughPlayer>());
+		this.players = Collections.synchronizedMap(new HashMap<UUID, BoroughPlayer>());
 	}
 
 	protected static String getClaimKey(String owner, String claimName) {
@@ -67,6 +78,56 @@ public class BoroughClaimStore {
 	public void evictCachedUserData(UUID user) {
 		this.claimMembershipCache.remove(user);
 		this.claimPermissionsCache.remove(user);
+	}
+
+	/**
+	 * This method should be invoked async
+	 * @param uuid Player UUID
+	 * @param playerRegistryId player registry in DB
+	 * @throws RuntimeException
+	 */
+	public void preProcessPlayerJoin(UUID uuid, long playerRegistryId) throws RuntimeException {
+		if (players.containsKey(uuid)) {
+			throw new RuntimeException("Command executor is already in Borough");
+		}
+
+		try {
+			BoroughPlayer b = new BoroughPlayer(uuid, playerRegistryId);
+			preprocessedPlayers.put(uuid, b);
+		} catch (Exception e) {
+			e.printStackTrace();
+			if (e.getCause() != null) {
+				e.getCause().printStackTrace();
+			}
+			throw new RuntimeException("An error occured while processing player " + uuid);
+		}
+	}
+
+	public void processPlayerJoin(Player p) {
+		BoroughPlayer b = preprocessedPlayers.remove(p.getUniqueId());
+		if (b == null) {
+			p.kickPlayer("[Borough] Database error. Unable to load profile from registry.");
+			return;
+		}
+
+		try {
+			b.linkPlayer(p);
+		} catch (RuntimeException e) {
+			p.kickPlayer("[Borough] Database error occured while loading player.");
+			e.printStackTrace();
+			return;
+		}
+
+		players.put(p.getUniqueId(), b);
+	} 
+
+	public void leaveGame(Player p) {
+		BoroughPlayer b = players.get(p.getUniqueId());
+		if (b == null) {
+			throw new RuntimeException("Command executor is not in Borough");
+		}
+
+		players.remove(p.getUniqueId());
 	}
 
 	/**

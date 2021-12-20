@@ -42,6 +42,9 @@ public class PlayerCacheEventListeners implements Listener {
 		Borough._this().logDebug("Processing login for user " + ev.getUniqueId() + ". Populating claim TC cache.");
 		List<String> claims = Borough.getClaimStore().getClaimNamesByUser(ev.getUniqueId(), BoroughChunkPermissionLevel.BUILDER);
 		claims.forEach((claim) -> { Borough._this().logDebug(claim); });
+
+		// TODO: Handle this
+		//Borough.getClaimStore().preProcessPlayerJoin(ev.getUniqueId(), playerRegistryId);
 	}
 	
 	public void onPlayerLeave(PlayerQuitEvent ev) {
