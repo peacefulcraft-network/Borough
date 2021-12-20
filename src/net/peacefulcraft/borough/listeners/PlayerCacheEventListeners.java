@@ -5,6 +5,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 import net.peacefulcraft.borough.Borough;
+
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
@@ -13,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
@@ -89,11 +92,16 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
+		// Checking if player is eating.
+		// If right clicking and held item in hand is food.
+		if (isEating(ev)) { return; }
+
 		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEvent.");
 			ev.setCancelled(true);
 		}
 	}
+
 
 	@EventHandler
 	public void EntityDamageByEntityEventListener(EntityDamageByEntityEvent ev) {
@@ -156,5 +164,22 @@ public class PlayerCacheEventListeners implements Listener {
 			Borough._this().logDebug("[PlayerCache] Cancel BlockFromToEvent, Water/Lava.");
 			ev.setCancelled(true);
 		}
+	}
+
+	/**
+	 * Checks if player is eating food or not
+	 * @param ev
+	 * @return True if eating. False otherwise
+	 */
+	private boolean isEating(PlayerInteractEvent ev) {
+		// Right clicking food in hand
+		if (ev.getAction().equals(Action.RIGHT_CLICK_AIR) || ev.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			ItemStack item = ev.getItem();
+			if (item == null || item.getType().equals(Material.AIR)) { return false; }
+
+			return item.getType().isEdible();
+		}
+
+		return false;
 	}
 }
