@@ -433,7 +433,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			if (args.length == 1) {
 				// Async for SQL
 				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-					
+					Borough.getClaimStore().visualizeChunks(p);
 				});
 			}
 			default:
