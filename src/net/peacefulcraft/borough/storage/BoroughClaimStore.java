@@ -275,8 +275,8 @@ public class BoroughClaimStore {
 	public void visualizeChunks(Player p) {
 		
 		World world = p.getWorld();
-		int baseX = p.getLocation().getChunk().getX();
-		int baseZ = p.getLocation().getChunk().getZ();
+		//int baseX = p.getLocation().getChunk().getX();
+		//int baseZ = p.getLocation().getChunk().getZ();
 
 		HashMap<Integer, ArrayList<BoroughChunk>> chunksAroundPlayer = new HashMap<>();
 		HashMap<Integer, ChatColor> colorMap = new HashMap<>();
