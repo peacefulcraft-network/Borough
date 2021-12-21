@@ -42,7 +42,9 @@ public class PlayerMovementListener implements Listener {
 					} else if (from.fromChunk.isChunkClaimed() && !toChunk.isChunkClaimed()) {
 						// 1.5 Exiting claim, going into unclaimed land.
 						sendAction(p, ChatColor.GRAY + "Entered Unclaimed Territory");
-					} else if(from.fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() && from.fromChunk.getClaimMeta().getClaimId() != toChunk.getClaimMeta().getClaimId()) {
+					} else if(from.fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() && 
+						from.fromChunk.getClaimMeta() != null && toChunk.getClaimMeta() != null &&
+						from.fromChunk.getClaimMeta().getClaimId() != toChunk.getClaimMeta().getClaimId()) {
 						// 2. Both claimed. Compare ids to confirm no match
 						sendAction(p, ChatColor.GREEN + "Entered " + toChunk.getClaimMeta().getCreatorUsername() + "'s claim: " + toChunk.getClaimMeta().getClaimName());
 					}
