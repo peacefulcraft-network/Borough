@@ -1,6 +1,7 @@
 package net.peacefulcraft.borough.listeners;
 
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
@@ -52,7 +53,7 @@ public class PlayerCacheEventListeners implements Listener {
 		Borough.getClaimStore().evictCachedUserData(ev.getPlayer().getUniqueId());
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void BlockBreakEventListener(BlockBreakEvent ev) {
 		Location loc = ev.getBlock().getLocation();
 		Player p = ev.getPlayer();
@@ -65,7 +66,7 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void BlockPlaceEventListener(BlockPlaceEvent ev) {
 		Location loc = ev.getBlock().getLocation();
 		Player p = ev.getPlayer();
@@ -83,7 +84,7 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void PlayerInteractEventListener(PlayerInteractEvent ev) {
 		if (ev.getClickedBlock() == null) { return; }
 
@@ -103,7 +104,7 @@ public class PlayerCacheEventListeners implements Listener {
 	}
 
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void EntityDamageByEntityEventListener(EntityDamageByEntityEvent ev) {
 		Entity e = ev.getDamager();
 		Entity vic = ev.getEntity();
@@ -125,7 +126,7 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void BlockDamageEventListener(BlockIgniteEvent ev) {
 		Location loc = ev.getBlock().getLocation();
 
@@ -137,7 +138,7 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void ExplodeEventListener(EntityExplodeEvent ev) {
 		Location loc = ev.getLocation();
 
@@ -149,7 +150,7 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void FluidMovementListener(BlockFromToEvent ev) {
 		Location loc = ev.getToBlock().getLocation();
 		
