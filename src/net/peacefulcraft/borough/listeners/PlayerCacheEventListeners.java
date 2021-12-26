@@ -119,7 +119,7 @@ public class PlayerCacheEventListeners implements Listener {
 				ev.setCancelled(true);
 			}
 		} else if ((e instanceof Player) && !(vic instanceof Player)) {
-			if (chunk.isChunkClaimed() && EntityHandler.isPassive(vic.getType())) {
+			if (!e.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(e.getUniqueId()) && EntityHandler.isPassive(vic.getType())) {
 				Borough._this().logDebug("[PlayerCache] Cancel EntityDamagePassiveEvent.");
 				ev.setCancelled(true);
 			}
