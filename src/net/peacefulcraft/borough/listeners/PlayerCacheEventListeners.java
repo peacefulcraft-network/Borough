@@ -4,6 +4,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import net.peacefulcraft.borough.Borough;
 
@@ -21,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.utilities.EntityHandler;
+import net.peacefulcraft.borough.utilities.ItemClassifier;
 
 import java.util.List;
 
@@ -97,21 +100,51 @@ public class PlayerCacheEventListeners implements Listener {
 		// If right clicking and held item in hand is food.
 		if (isEating(ev)) { return; }
 
+		// Check if player is equiping armor/elytra
+		if (isEquiping(ev)) { return; }
+
 		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEvent.");
 			ev.setCancelled(true);
 		}
 	}
 
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void PlayerInteractEntityEventListener(PlayerInteractEntityEvent ev) {
+		Entity ent = ev.getRightClicked();
+		Location loc = ent.getLocation();
+		Player p = ev.getPlayer();
+
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId()) && EntityHandler.isPassive(ev.getRightClicked().getType())) {
+			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEntityEvent.");
+			ev.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void PlayerInteractEntityListener(PlayerInteractAtEntityEvent ev) {
+		Entity ent = ev.getRightClicked();
+		Location loc = ent.getLocation();
+		Player p = ev.getPlayer();
+
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
+			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractAtEntityEvent.");
+			ev.setCancelled(true);
+		}
+	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void EntityDamageByEntityEventListener(EntityDamageByEntityEvent ev) {
 		Entity e = ev.getDamager();
 		Entity vic = ev.getEntity();
-		Location loc = e.getLocation();
+		Location loc = vic.getLocation();
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
-
+		
 		if ((e instanceof Player) && (vic instanceof Player)) {
 			// PVP event
 			if (chunk.isChunkClaimed() && !chunk.doesAllowPVP()) {
@@ -169,7 +202,7 @@ public class PlayerCacheEventListeners implements Listener {
 
 	/**
 	 * Checks if player is eating food or not
-	 * @param ev
+	 * @param ev Interact Event we are processing
 	 * @return True if eating. False otherwise
 	 */
 	private boolean isEating(PlayerInteractEvent ev) {
@@ -179,6 +212,22 @@ public class PlayerCacheEventListeners implements Listener {
 			if (item == null || item.getType().equals(Material.AIR)) { return false; }
 
 			return item.getType().isEdible();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether player is attempting to equip armor/wearable
+	 * @param ev Interact Event we are processing.
+	 * @return True if equiping. False otherwise.
+	 */
+	private boolean isEquiping(PlayerInteractEvent ev) {
+		if (ev.getAction().equals(Action.RIGHT_CLICK_AIR) || ev.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			ItemStack item = ev.getItem();
+			if (item == null || item.getType().equals(Material.AIR)) { return false; }
+
+			return ItemClassifier.isEquipable(item.getType());
 		}
 
 		return false;
