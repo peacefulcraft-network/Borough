@@ -2,9 +2,9 @@
 -- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
--- Host: 172.16.2.10:3306
--- Generation Time: Dec 15, 2021 at 11:58 PM
--- Server version: 10.6.4-MariaDB-1:10.6.4+maria~focal
+-- Host: 172.16.1.10:3306
+-- Generation Time: Jan 01, 2022 at 09:15 PM
+-- Server version: 10.6.5-MariaDB-1:10.6.5+maria~focal
 -- PHP Version: 8.0.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `s97_borough`
+-- Database: `s43_borough`
 --
 
 -- --------------------------------------------------------
@@ -64,12 +64,13 @@ CREATE TABLE `claim_permission` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `uuid_cache`
+-- Table structure for table `player`
 --
 
-CREATE TABLE `uuid_cache` (
+CREATE TABLE `player` (
   `UUID` char(36) NOT NULL,
-  `username` varchar(16) NOT NULL
+  `username` varchar(16) NOT NULL,
+  `preference` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL DEFAULT '{}' CHECK (json_valid(`preference`))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -97,9 +98,9 @@ ALTER TABLE `claim_permission`
   ADD KEY `chunk_id` (`claim_id`);
 
 --
--- Indexes for table `uuid_cache`
+-- Indexes for table `player`
 --
-ALTER TABLE `uuid_cache`
+ALTER TABLE `player`
   ADD PRIMARY KEY (`UUID`),
   ADD KEY `username` (`username`);
 

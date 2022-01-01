@@ -17,6 +17,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -40,7 +41,7 @@ public class PlayerCacheEventListeners implements Listener {
 	 * @param ev
 	 */
 	@EventHandler
-	public void onPlayerJoin(AsyncPlayerPreLoginEvent ev) {
+	public void onPlayerPreJoin(AsyncPlayerPreLoginEvent ev) {
 		// Store UUID:username
 		Borough._this().logDebug("Processing login for user " + ev.getUniqueId() + ". Requesting UUID mapping.");
 		Borough.getUUIDCache().cacheUUIDUsernameMapping(ev.getUniqueId(), ev.getName());
@@ -51,12 +52,27 @@ public class PlayerCacheEventListeners implements Listener {
 		claims.forEach((claim) -> { Borough._this().logDebug(claim); });
 
 		// TODO: Handle this
-		//Borough.getClaimStore().preProcessPlayerJoin(ev.getUniqueId(), playerRegistryId);
+		Borough.getOnlinePlayerDataStore().preProccessPlayerJoin(ev.getUniqueId());
 	}
 	
+	/**
+	 * Link BoroughPlayer objects to Bukkit Player objects once they are available.
+	 * @param ev
+	 */
+	@EventHandler(ignoreCancelled = true)
+	public void onPlayerJoin(PlayerLoginEvent ev) {
+		Borough.getOnlinePlayerDataStore().linkPlayer(ev.getPlayer());
+	}
+
+	/**
+	 * Purge player data from in-memory caches.
+	 * @param ev
+	 */
+	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent ev) {
 		Borough._this().logDebug("Processing logout for user " + ev.getPlayer().getName() + ". Requesting cache eviction.");
 		Borough.getClaimStore().evictCachedUserData(ev.getPlayer().getUniqueId());
+		Borough.getOnlinePlayerDataStore().evictBoroughPlayerFromCache(ev.getPlayer().getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
