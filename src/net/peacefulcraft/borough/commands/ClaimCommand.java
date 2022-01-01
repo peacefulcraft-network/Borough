@@ -470,6 +470,14 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					sender.sendMessage(Borough.messagingPrefix + "'remove-user' command expects a claim name too. Claim names cannot contain spaces.");
 				}
 				break;
+			case "map":
+			if (args.length == 1) {
+				// Async for SQL
+				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.getClaimStore().visualizeChunks(p);
+				});
+			}
+				break;
 			case "list":
 				// Go async for SQL
 				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {

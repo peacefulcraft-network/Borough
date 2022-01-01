@@ -18,6 +18,7 @@ import net.peacefulcraft.borough.listeners.PlayerMovementListener;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
+import net.peacefulcraft.borough.storage.BoroughPlayerDataStore;
 import net.peacefulcraft.borough.storage.SQLQueries;
 import net.peacefulcraft.borough.storage.UUIDCache;
 
@@ -35,6 +36,9 @@ public class Borough extends JavaPlugin {
 	private static BoroughClaimStore claimStore;
 		public static BoroughClaimStore getClaimStore() { return claimStore; }
 
+	private static BoroughPlayerDataStore onlinePlayerDataStore;
+		public static BoroughPlayerDataStore getOnlinePlayerDataStore() { return onlinePlayerDataStore; }
+
 	private static UUIDCache uuidCache;
 		public static UUIDCache getUUIDCache() { return uuidCache; }
 	/**
@@ -51,6 +55,7 @@ public class Borough extends JavaPlugin {
 
 		uuidCache = new UUIDCache();
 		claimStore = new BoroughClaimStore();
+		onlinePlayerDataStore = new BoroughPlayerDataStore();
 
 		this.setupCommands();
 		this.setupEventListeners();
@@ -121,6 +126,12 @@ public class Borough extends JavaPlugin {
 	 */
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
+
+		// Explicitly clear references to static cache objects so they can be GC'd sooner.
+		claimStore = null;
+		uuidCache = null;
+		onlinePlayerDataStore = null;
+		
 		SQLQueries.teardown();
 	}
 

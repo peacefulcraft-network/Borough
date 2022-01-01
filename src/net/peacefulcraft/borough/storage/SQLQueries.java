@@ -5,6 +5,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -180,7 +184,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection()
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("SELECT `claim_name`,`username`,`world`,`x`,`z` FROM `claim_chunk` LEFT JOIN `claim` ON `claim_chunk`.`claim_id`=`claim`.`claim_id` LEFT JOIN `uuid_cache` ON `claim`.`creator_uuid`=`uuid_cache`.`uuid` WHERE `world`=? AND `x`=? AND `z`=?");
+			PreparedStatement stmt = mysql.prepareStatement("SELECT `claim_name`,`username`,`world`,`x`,`z` FROM `claim_chunk` LEFT JOIN `claim` ON `claim_chunk`.`claim_id`=`claim`.`claim_id` LEFT JOIN `player` ON `claim`.`creator_uuid`=`player`.`uuid` WHERE `world`=? AND `x`=? AND `z`=?");
 			stmt.setString(1, world);
 			stmt.setInt(2, x);
 			stmt.setInt(3, z);
@@ -267,7 +271,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection();
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("REPLACE INTO `uuid_cache` VALUES(?,?)");
+			PreparedStatement stmt = mysql.prepareStatement("REPLACE INTO `player` VALUES(?,?)");
 			stmt.setString(1, uuid.toString());
 			stmt.setString(2, username);
 			stmt.executeUpdate();
@@ -283,7 +287,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection()
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("SELECT `username` FROM `uuid_cache` WHERE `uuid`=?");
+			PreparedStatement stmt = mysql.prepareStatement("SELECT `username` FROM `player` WHERE `uuid`=?");
 			stmt.setString(1, uuid.toString());
 			ResultSet result = stmt.executeQuery();
 			
@@ -303,7 +307,7 @@ public class SQLQueries {
 		try (
 			Connection mysql = ds.getConnection()
 		) {
-			PreparedStatement stmt = mysql.prepareStatement("SELECT `uuid` FROM `uuid_cache` WHERE `username`=?");
+			PreparedStatement stmt = mysql.prepareStatement("SELECT `uuid` FROM `player` WHERE `username`=?");
 			stmt.setString(1, username);
 			ResultSet result = stmt.executeQuery();
 			
@@ -337,7 +341,7 @@ public class SQLQueries {
 					(SELECT `creator_uuid`,`claim_name`,\"OWNER\" as `level` FROM `claim` WHERE `creator_uuid`=?)
 					UNION
 					(SELECT `creator_uuid`,`claim_name`,`level` FROM `claim_permission` LEFT JOIN `claim` on `claim_permission`.`claim_id` = `claim`.`claim_id` WHERE `user_uuid`=?)
-					) AS `claimset` LEFT JOIN `uuid_cache` ON `uuid_cache`.`UUID`=`claimset`.`creator_uuid`
+					) AS `claimset` LEFT JOIN `player` ON `player`.`UUID`=`claimset`.`creator_uuid`
 				)
 			""");
 			stmt.setString(1, user.toString());
@@ -368,6 +372,55 @@ public class SQLQueries {
 			stmt.close();
 		} catch (SQLException ex) {
 
+		}
+	}
+
+	/**
+	 * Load player preferences from database.
+	 * @param uuid UUID of player who's preferences to fetch.
+	 * @return JsonObject of player's preferences.
+	 * @return null If no preferences found.
+	 */
+	public static JsonObject loadBoroughPlayerPreferences(UUID uuid) {
+		try (
+			Connection mysql = ds.getConnection()
+		) {
+			PreparedStatement stmt = mysql.prepareStatement("SELECT `preference` FROM `player` WHERE `uuid`=?");
+			stmt.setString(1, uuid.toString());
+			ResultSet result = stmt.executeQuery();
+			if (result.next()) {
+				// Parse and return results
+				String preference = result.getString("preference");
+				return JsonParser.parseString(preference).getAsJsonObject();
+			} else {
+				// No results
+				result.close();
+				stmt.close();
+				return null;
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			Borough._this().logSevere("Error loading player preferences for player " + uuid + ". " + ex.getMessage());
+
+		} catch (JsonSyntaxException ex) {
+			ex.printStackTrace();
+			Borough._this().logSevere("Error parsing player preferences for player " + uuid + ". " + ex.getMessage());
+		}
+		return null;
+	}
+
+	public static void saveBoroughPlayerPreferences(UUID uuid, JsonObject preferences) {
+		try (
+			Connection mysql = ds.getConnection()
+		) {
+			PreparedStatement stmt = mysql.prepareStatement("UPDATE `player` SET `preference`=? WHERE `uuid`=?");
+			stmt.setString(1, preferences.toString());
+			stmt.setString(2, uuid.toString());
+			stmt.executeUpdate();
+			stmt.close();
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			Borough._this().logSevere("Error saving player preferences for player " + uuid + ". " + ex.getMessage());
 		}
 	}
 }
