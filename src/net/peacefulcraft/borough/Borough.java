@@ -1,16 +1,22 @@
 package net.peacefulcraft.borough;
 
+import java.util.ArrayList;
+import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Chunk;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatColor;
+import net.peacefulcraft.borough.commands.BoroughAdmin;
 import net.peacefulcraft.borough.commands.ClaimCommand;
 import net.peacefulcraft.borough.commands.UnclaimCommand;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
 import net.peacefulcraft.borough.listeners.PlayerMovementListener;
+import net.peacefulcraft.borough.storage.BoroughChunk;
+import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
 import net.peacefulcraft.borough.storage.SQLQueries;
 import net.peacefulcraft.borough.storage.UUIDCache;
@@ -48,6 +54,46 @@ public class Borough extends JavaPlugin {
 
 		this.setupCommands();
 		this.setupEventListeners();
+
+		ArrayList<UUID> needToFetch = new ArrayList<UUID>();
+		this.getServer().getOnlinePlayers().forEach((p) -> {
+			needToFetch.add(p.getUniqueId());
+		});
+		logDebug("Found " + needToFetch.size() + " users who data that were already connected.");
+
+		this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+			needToFetch.forEach((uuid) -> claimStore.getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER));
+			logDebug("Finished user pre-caching.");
+		});
+
+		ArrayList<ChunkEntry> chunksToLoad = new ArrayList<ChunkEntry>();
+		this.getServer().getWorlds().forEach((world) -> {
+			for (Chunk c: world.getLoadedChunks()) {
+				chunksToLoad.add(new ChunkEntry(world.getName(), c.getX(), c.getX()));
+			}
+		});
+		logDebug("Found " + chunksToLoad.size() + " chunks to pre-fetch that were already loaded.");
+		this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+			chunksToLoad.forEach((c) -> {
+				BoroughChunk chunk = claimStore.getChunk(c.world, c.x, c.z);
+				if (chunk.isChunkClaimed()) {
+					chunk.getClaimMeta();
+				}
+			});
+			logDebug("Finished chunk pre-caching.");
+		});
+	}
+
+	private class ChunkEntry {
+		String world;
+		int x;
+		int z;
+
+		public ChunkEntry(String world, int x, int z) {
+			this.world = world;
+			this.x = x;
+			this.z = z;
+		}
 	}
 
 	public void logDebug(String message) {
@@ -83,6 +129,7 @@ public class Borough extends JavaPlugin {
 		this.getCommand("claim").setExecutor(claimCommand);
 		this.getCommand("claim").setTabCompleter(claimCommand);
 		this.getCommand("unclaim").setExecutor(new UnclaimCommand());		
+		this.getCommand("boroughadmin").setExecutor(new BoroughAdmin());
 	}
 
 	private void setupEventListeners() {

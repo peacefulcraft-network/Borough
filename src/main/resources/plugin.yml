@@ -17,6 +17,8 @@ commands:
   unclaim:
     description: Unclaim the chunk in which you stand.
     usage: /<command>
+  boroughadmin:
+    description: Admin commnad
 
 permissions:
   pcn.staff:

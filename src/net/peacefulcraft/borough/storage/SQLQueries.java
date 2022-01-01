@@ -1,6 +1,7 @@
 package net.peacefulcraft.borough.storage;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,11 +54,11 @@ public class SQLQueries {
 			int claimId = keys.getInt(1);
 			stmt.close();
 
-			List<UUID> owners = new ArrayList<UUID>();
+			List<UUID> owners = Collections.synchronizedList(new ArrayList<UUID>());
 			owners.add(owner);
 
-			List<UUID> moderators = new ArrayList<UUID>();
-			List<UUID> builders = new ArrayList<UUID>();
+			List<UUID> moderators = Collections.synchronizedList(new ArrayList<UUID>());
+			List<UUID> builders = Collections.synchronizedList(new ArrayList<UUID>());
 
 			return new BoroughClaim(claimId, name, owners, moderators, builders);
 
@@ -95,10 +96,10 @@ public class SQLQueries {
 			stmt = mysql.prepareStatement("SELECT `user_uuid`,`level` FROM `claim_permission` WHERE `claim_id`=?");
 			stmt.setInt(1, claim_id);
 			result = stmt.executeQuery();
-			List<UUID> owners = new ArrayList<UUID>();
+			List<UUID> owners = Collections.synchronizedList(new ArrayList<UUID>());
 			owners.add(owner);
-			List<UUID> moderators = new ArrayList<UUID>();
-			List<UUID> builders = new ArrayList<UUID>();
+			List<UUID> moderators = Collections.synchronizedList(new ArrayList<UUID>());
+			List<UUID> builders = Collections.synchronizedList(new ArrayList<UUID>());
 
 			// Get permissions
 			while (result.next()) {
@@ -122,9 +123,6 @@ public class SQLQueries {
 			BoroughClaim claimMeta = new BoroughClaim(claim_id, claim_name, owners, moderators, builders, allowBlockDamage, allowFluidMovement, allowPvP);
 			result.close();
 			stmt.close();
-
-			String username = Borough.getUUIDCache().uuidToUsername(owner);
-			Borough.getClaimStore().claimCache.put(BoroughClaimStore.getClaimKey(username, claimName), claimMeta);
 			return claimMeta;
 		} catch (SQLException ex) {
 			Borough._this().logSevere("Error fetching claim (" + claimName + ").");
@@ -159,7 +157,7 @@ public class SQLQueries {
 			stmt.executeUpdate();
 			stmt.close();
 
-			claimTarget.setClaimMeta(claimSource);
+			claimTarget.setClaimMeta(BoroughClaimStore.getClaimKey(claimSource.getCreatorUsername(), claimSource.getClaimName()));
 			claimSource.getChunks().add(claimTarget);
 
 		} catch (SQLException ex) {
@@ -191,18 +189,17 @@ public class SQLQueries {
 			if (!result.next()) { return null; }
 
 			String ownerUsername = result.getString("username");
-			Borough._this().logDebug("Found chunk with owner (" + world + "," + x + "," + z + ")" + ownerUsername);
+			Borough._this().logDebug("Found chunk with owner (" + world + "," + x + "," + z + ") " + ownerUsername);
 			if (ownerUsername == null) {
 			// unclaimed
-				return new BoroughChunk(null, world, x, z);
+				return new BoroughChunk("", world, x, z);
 
 			} else {
 			// claimed
-				String claimName = ownerUsername + ":" + result.getString("claim_name");
-				BoroughClaim claimMeta = Borough.getClaimStore().getClaim(claimName);
-				BoroughChunk chunk = new BoroughChunk(claimMeta, result.getString("world"), result.getInt("x"), result.getInt("z"));
+				String claimKey = BoroughClaimStore.getClaimKey(ownerUsername, result.getString("claim_name"));
+				BoroughClaim claimMeta = Borough.getClaimStore().getClaim(claimKey);
+				BoroughChunk chunk = new BoroughChunk(claimKey, result.getString("world"), result.getInt("x"), result.getInt("z"));
 				claimMeta.getChunks().add(chunk);
-				Borough.getClaimStore().chunkCache.put(BoroughClaimStore.getChunkKey(chunk), chunk);
 
 				return chunk;
 			}

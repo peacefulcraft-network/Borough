@@ -17,39 +17,49 @@ public class BoroughClaim {
 
 	private String claimName;
 		/**
-		 * @return String: claim name or NULL: if unclaimed
+		 * @return String: claim name
 		 */
 		public String getClaimName() { return this.claimName; }
 
 	private List<BoroughChunk> chunks;
 		/**
+		 * List can be modified by external methods. This is intentional.
 		 * @return List of chunks in this claim
 		 */
 		public List<BoroughChunk> getChunks() { return this.chunks; }
 
 	private List<UUID> owners;
-		public List<UUID> getOwners() { return Collections.unmodifiableList(this.owners); }
+		public List<UUID> getOwners() { return this.owners; }
+		public String getCreatorUsername() {
+			return Borough.getUUIDCache().uuidToUsername(this.owners.get(0));
+		}
 	private List<UUID> moderators;
-		public List<UUID> getModerators() { return Collections.unmodifiableList(this.moderators); }
+		public List<UUID> getModerators() { return this.moderators; }
 	private List<UUID> builders;
-		public List<UUID> getBuilders() { return Collections.unmodifiableList(this.builders); }
+		public List<UUID> getBuilders() { return this.builders; }
 
 	private Boolean allowBlockDamage;
 		public Boolean doesAllowBlockDamage() { return this.allowBlockDamage; }
 		public void setBlockDamage(Boolean b) {
-			this.allowBlockDamage = b;
+			synchronized (this) {
+				this.allowBlockDamage = b;
+			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_BLOCK_DAMAGE, b);
 		}
 	private Boolean allowFluidMovement;
 		public Boolean doesAllowFluidMovement() { return this.allowFluidMovement; }
 		public void setFluidMovement(Boolean b) {
-			this.allowFluidMovement = b;
+			synchronized(this) {
+				this.allowFluidMovement = b;
+			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_FLUID_MOVEMENT, b);
 		}
 	private Boolean allowPVP;
 		public Boolean doesAllowPVP() { return this.allowPVP; }
 		public void setPVP(Boolean b) {
-			this.allowPVP = b;
+			synchronized(this) {
+				this.allowPVP = b;
+			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_PVP, b);
 		}
 

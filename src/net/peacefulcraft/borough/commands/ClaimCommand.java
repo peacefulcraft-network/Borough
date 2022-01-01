@@ -76,12 +76,18 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have ownership permissions on this claim?");
 						} else {
 							Chunk chunk = p.getLocation().getChunk();
 							try {
 								BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+								if (claim == null) {
+									// Staff can request claims other than their own. We need to check again that it exists.
+									sender.sendMessage("Unknown claim " + args[1] + ".");
+									return;
+								}
+
 								BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 								if (boroughChunk.isChunkClaimed()) {
 										// Go back to Bukkit land to do Bukkit things
@@ -112,7 +118,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have ownership permissions on this claim?");
 						} else if (args.length > 2 && args[2].equalsIgnoreCase("confirm")) {
 
@@ -121,7 +127,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 
 									// Go back to Bukkit land to do Bukkit things
 									Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
-										sender.sendMessage(Borough.messagingPrefix + "Succesfully extended claim " + args[1] + " to the chunk you were standing in.");
+										sender.sendMessage(Borough.messagingPrefix + "Succesfully deleted claim " + args[1] + ".");
 									});
 								} catch (RuntimeException ex) {
 									sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to delete claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
@@ -129,7 +135,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									ex.printStackTrace();
 								}
 						} else {
-							sender.sendMessage(Borough.messagingPrefix + "Will delete ALL chunk claims apart of " + args[1] + ". To confirm run " + ChatColor.GOLD + "/claim delete " + args[1] + "confirm");
+							sender.sendMessage(Borough.messagingPrefix + "Will delete ALL chunk claims apart of " + args[1] + ". To confirm run " + ChatColor.GOLD + "/claim delete " + args[1] + " confirm");
 						}
 					});
 				} else {
@@ -141,12 +147,16 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ".");
 						} else {
-							Chunk chunk = p.getLocation().getChunk();
 							try {
 								BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+								if (claim == null) {
+									// Staff can request claims other than their own. We need to check again that it exists.
+									sender.sendMessage("Unknown claim " + args[1] + ".");
+									return;
+								}
 
 								final StringBuilder ownerUsernames = new StringBuilder();
 								claim.getOwners().forEach((uuid) -> { ownerUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
@@ -180,7 +190,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator or greater permissions on this claim?");
 						} else {
 							if (args.length > 2) {
@@ -194,6 +204,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										});
 									} else {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+										if (claim == null) {
+											// Staff can request claims other than their own. We need to check again that it exists.
+											sender.sendMessage("Unknown claim " + args[1] + ".");
+											return;
+										}
 
 										// Already have perms or add new perms does not matter. Just report success
 										try { claim.addBuilder(uuid); }
@@ -221,7 +236,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have administrative or greater permissions on this claim?");
 						} else {
 							if (args.length > 2) {
@@ -234,6 +249,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										});
 									} else {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+										if (claim == null) {
+											// Staff can request claims other than their own. We need to check again that it exists.
+											sender.sendMessage("Unknown claim " + args[1] + ".");
+											return;
+										}
 
 										// Already have perms or add new perms does not matter. Just report success
 										try { claim.addModerator(uuid); }
@@ -260,7 +280,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have administrative permissions on this claim?");
 						} else {
 							if (args.length > 2) {
@@ -274,6 +294,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										});
 									} else {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+										if (claim == null) {
+											// Staff can request claims other than their own. We need to check again that it exists.
+											sender.sendMessage("Unknown claim " + args[1] + ".");
+											return;
+										}
 
 										// Already have perms or add new perms does not matter. Just report success
 										try { claim.addOwner(uuid);}
@@ -300,7 +325,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator permissions on this claim?");
 						} else {
 							if (args.length > 2) {
@@ -314,6 +339,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										});
 									} else {
 										BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+										if (claim == null) {
+											// Staff can request claims other than their own. We need to check again that it exists.
+											sender.sendMessage("Unknown claim " + args[1] + ".");
+											return;
+										}
 
 										// If it's a moderator trying to remove an admin, block the request
 										if (claim.getModerators().contains(p.getUniqueId()) && claim.getOwners().contains(uuid) == true) {
@@ -349,7 +379,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator permissions on this claim?");
 						} else {
 							if (args.length > 3) {
@@ -372,6 +402,12 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 
 								try {
 									BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+									if (claim == null) {
+										// Staff can request claims other than their own. We need to check again that it exists.
+										sender.sendMessage("Unknown claim " + args[1] + ".");
+										return;
+									}
+
 									switch (rule) {
 										case "allowblockdamage":
 											claim.setBlockDamage(state);
@@ -402,18 +438,23 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				if (args.length > 1) {
 					// Go async for SQL
 					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
-						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1])) {
+						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have build permissions on this claim?");
 						} else {
 							try {
 								BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+								if (claim == null) {
+									// Staff can request claims other than their own. We need to check again that it exists.
+									sender.sendMessage("Unknown claim " + args[1] + ".");
+									return;
+								}
 
 								Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
 									if (claim.getChunks().size() == 0) {
 										sender.sendMessage(Borough.messagingPrefix + "There are no chunks in claim " + args[1]);
 									} else {
 										sender.sendMessage(Borough.messagingPrefix + "Teleporting to claim " + args[1]);
-										Location loc = new Location(Borough._this().getServer().getWorld(claim.getChunks().get(0).getWorld()), (double) claim.getChunks().get(0).getChunkX() * 16, 300.0, (double) claim.getChunks().get(0).getChunkX() * 16);
+										Location loc = new Location(Borough._this().getServer().getWorld(claim.getChunks().get(0).getWorld()), (double) claim.getChunks().get(0).getChunkX() * 16, 300.0, (double) claim.getChunks().get(0).getChunkZ() * 16);
 										p.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 200, 255));
 										p.teleport(loc);
 									}
@@ -436,6 +477,36 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					Borough.getClaimStore().visualizeChunks(p);
 				});
 			}
+				break;
+			case "list":
+				// Go async for SQL
+				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					try {
+						// Only staff can see other people's stuff
+						String username = sender.getName();
+						if (args.length > 1 && sender.hasPermission("pcn.staff")) {
+							username = args[1];
+						}
+
+						final String username2 = username; // Lambda wants finality
+						UUID uuid = Borough.getUUIDCache().usernameToUUID(username);
+						if (uuid == null) {
+							Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
+								sender.sendMessage(Borough.messagingPrefix + "Uknown user " + username2);
+							});
+						}
+						List<String> claims = Borough.getClaimStore().getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER);
+						Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
+							sender.sendMessage(Borough.messagingPrefix + " " + username2 + " has " + claims.size() + " claims.");
+							sender.sendMessage(ChatColor.GRAY + String.join(", ", claims));
+						});
+					} catch (RuntimeException ex) {
+						sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to list claims for user.");
+						Borough._this().logSevere(ex.getMessage());
+						ex.printStackTrace();
+					}
+				});
+				break;
 			default:
 				sender.sendMessage(Borough.messagingPrefix + "Unknown option " + args[0] + ". Valid sub commands are:");
 				this.sendMainHelpMessage(sender);
@@ -445,7 +516,18 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 	}
 
 	private void sendMainHelpMessage(CommandSender sender) {
-
+		sender.sendMessage(ChatColor.GRAY + "-------------------------------------------");
+		sender.sendMessage(ChatColor.GOLD + "/unclaim " + ChatColor.GRAY + " Unclaim the chunk you're standing in.");
+		sender.sendMessage(ChatColor.GOLD + "/claim");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "create " + ChatColor.GRAY + " Create a new claim with the given name.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "extend " + ChatColor.GRAY + " Add a chunk to an existing claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "delete " + ChatColor.GRAY + " Delete a claim (all chunks).");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "info " + ChatColor.GRAY + " View information about a claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "list " + ChatColor.GRAY + " List claims that you've created or have access to.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "add-builder " + ChatColor.GRAY + " Grant build permission on a claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "add-moderator " + ChatColor.GRAY + " Grant build and add-builder permissions on a claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "add-admin " + ChatColor.GRAY + " Grant access to all commands on a claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "tp " + ChatColor.GRAY + " Teleport your claim with the given name.");
 	}
 
 	@Override
@@ -460,7 +542,9 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					opts.add("create");
 					opts.add("extend");
 					opts.add("delete");
+					opts.add("help");
 					opts.add("info");
+					opts.add("list");
 					opts.add("add-builder");
 					opts.add("add-moderator");
 					opts.add("add-admin");
@@ -476,11 +560,22 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR));
 					} else if (args[0].equalsIgnoreCase("add-moderator") || args[0].equalsIgnoreCase("add-admin")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER));
-					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") ){
+					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("extend")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER));
 					}
 					this.argMatch(opts, args[1]);
 					break;
+				case 3:
+					if (args[0].equalsIgnoreCase("add-builder") || args[0].equalsIgnoreCase("add-moderator") || args[0].equalsIgnoreCase("add-admin")) {
+						Borough._this().getServer().getOnlinePlayers().forEach((player) -> {
+							opts.add(player.getName());
+						});
+					} else if (args[0].equalsIgnoreCase("remove-user")) {
+						BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+						claim.getBuilders().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
+						claim.getModerators().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
+						claim.getOwners().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
+					}
 			}	
 		}
 

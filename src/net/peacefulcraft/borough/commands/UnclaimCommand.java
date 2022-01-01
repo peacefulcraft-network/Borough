@@ -1,8 +1,5 @@
 package net.peacefulcraft.borough.commands;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Chunk;
@@ -29,12 +26,12 @@ public class UnclaimCommand implements CommandExecutor {
 		CompletableFuture.runAsync(() -> {
 			BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 			if (boroughChunk.isChunkClaimed()) {
-				if (boroughChunk.getClaimMeta().getOwners().contains(p.getUniqueId())) {
+				if (boroughChunk.getClaimMeta().getOwners().contains(p.getUniqueId()) || sender.hasPermission("pcn.staff")) {
 					Borough.getClaimStore().unclaimChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 
 					// Go back to Bukkit land to do Bukkit things
 					Borough._this().getServer().getScheduler().runTask(Borough._this(), ()-> {
-						sender.sendMessage(Borough.messagingPrefix + "The chunk you are standing in is not claimed.");
+						sender.sendMessage(Borough.messagingPrefix + "Chunk unclaimed!");
 					});
 				} else {
 					// Go back to Bukkit land to do Bukkit things
