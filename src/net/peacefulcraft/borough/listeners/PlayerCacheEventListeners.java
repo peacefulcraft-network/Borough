@@ -30,7 +30,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
 public class PlayerCacheEventListeners implements Listener {
@@ -107,6 +106,20 @@ public class PlayerCacheEventListeners implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void PlayerInteractEntityEventListener(PlayerInteractEntityEvent ev) {
+		Entity ent = ev.getRightClicked();
+		Location loc = ent.getLocation();
+		Player p = ev.getPlayer();
+
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId()) && EntityHandler.isPassive(ev.getRightClicked().getType())) {
+			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEntityEvent.");
+			ev.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void PlayerInteractEntityListener(PlayerInteractAtEntityEvent ev) {
 		Entity ent = ev.getRightClicked();
 		Location loc = ent.getLocation();
@@ -120,15 +133,14 @@ public class PlayerCacheEventListeners implements Listener {
 		}
 	}
 
-
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void EntityDamageByEntityEventListener(EntityDamageByEntityEvent ev) {
 		Entity e = ev.getDamager();
 		Entity vic = ev.getEntity();
-		Location loc = e.getLocation();
+		Location loc = vic.getLocation();
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
-
+		
 		if ((e instanceof Player) && (vic instanceof Player)) {
 			// PVP event
 			if (chunk.isChunkClaimed() && !chunk.doesAllowPVP()) {
