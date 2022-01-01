@@ -11,6 +11,7 @@ import net.peacefulcraft.borough.Borough;
 
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -25,6 +26,7 @@ import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.utilities.EntityHandler;
 import net.peacefulcraft.borough.utilities.ItemClassifier;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -66,6 +68,24 @@ public class PlayerCacheEventListeners implements Listener {
 		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel BlockBreakEvent.");
 			ev.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void BlockExplodeEventListener(BlockExplodeEvent ev) {
+		Iterator<Block> iter = ev.blockList().iterator();
+		while (iter.hasNext()) {
+			Block b = iter.next();
+
+			Location loc = b.getLocation();
+
+			BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+			if (chunk == null) { continue; }
+
+			// If chunk is claimed, has claim meta, and does not allow block damage
+			if (chunk.isChunkClaimed() && chunk.getClaimMeta() != null && !chunk.getClaimMeta().doesAllowBlockDamage()) {
+				iter.remove();
+			}
 		}
 	}
 
