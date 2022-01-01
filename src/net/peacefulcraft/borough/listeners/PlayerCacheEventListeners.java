@@ -23,6 +23,7 @@ import org.bukkit.inventory.ItemStack;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.utilities.EntityHandler;
+import net.peacefulcraft.borough.utilities.ItemClassifier;
 
 import java.util.List;
 
@@ -98,6 +99,9 @@ public class PlayerCacheEventListeners implements Listener {
 		// Checking if player is eating.
 		// If right clicking and held item in hand is food.
 		if (isEating(ev)) { return; }
+
+		// Check if player is equiping armor/elytra
+		if (isEquiping(ev)) { return; }
 
 		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId())) {
 			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEvent.");
@@ -208,6 +212,22 @@ public class PlayerCacheEventListeners implements Listener {
 			if (item == null || item.getType().equals(Material.AIR)) { return false; }
 
 			return item.getType().isEdible();
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks whether player is attempting to equip armor/wearable
+	 * @param ev Interact Event we are processing.
+	 * @return True if equiping. False otherwise.
+	 */
+	private boolean isEquiping(PlayerInteractEvent ev) {
+		if (ev.getAction().equals(Action.RIGHT_CLICK_AIR) || ev.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			ItemStack item = ev.getItem();
+			if (item == null || item.getType().equals(Material.AIR)) { return false; }
+
+			return ItemClassifier.isEquipable(item.getType());
 		}
 
 		return false;
