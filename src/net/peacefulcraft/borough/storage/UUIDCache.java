@@ -29,7 +29,7 @@ public class UUIDCache {
 		
 		this.uuidMap.put(uuid, username);
 		this.usernameMap.put(username, uuid);
-		Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+		Borough.mysqlThreadPool.submit(() -> {
 			SQLQueries.storeUUIDUsernameMapping(uuid, username);
 		});
 	}

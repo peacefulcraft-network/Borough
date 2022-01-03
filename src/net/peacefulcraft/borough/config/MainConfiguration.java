@@ -39,4 +39,8 @@ public class MainConfiguration extends Configuration {
 	public String getMysqlPassword() {
 		return this.config.getString("mysql.password");
 	}
+
+	public Integer getWorkerPoolSize() {
+		return this.config.getInt("worker_pool_size");
+	}
 }

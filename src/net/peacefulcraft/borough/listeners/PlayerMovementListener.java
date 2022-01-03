@@ -31,7 +31,7 @@ public class PlayerMovementListener implements Listener {
 		if (playerMap.containsKey(id)) {
 			// Check if it has been sufficiently long since we've check player movement
 			if ((playerMap.get(id).lastCheckRun - currentTime) < 2000) {
-				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+				Borough.mysqlThreadPool.submit(() -> {
 					HistoricalMoveEvent from = playerMap.get(id);
 					BoroughChunk toChunk = Borough.getClaimStore().getChunk(ev.getTo());
 
@@ -55,7 +55,7 @@ public class PlayerMovementListener implements Listener {
 			}
 		// new player, initialize datastructures
 		} else {
-			Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+			Borough.mysqlThreadPool.submit(() -> {
 				BoroughChunk fromChunk = Borough.getClaimStore().getChunk(ev.getFrom());
 				playerMap.put(id, new HistoricalMoveEvent(fromChunk, currentTime));
 

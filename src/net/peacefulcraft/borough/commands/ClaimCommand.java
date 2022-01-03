@@ -44,7 +44,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					Borough._this().logDebug("Processing claim create request for user " + p.getName() + ", claim " + args[1]);
 					Chunk chunk = p.getLocation().getChunk();
 					// Go async because blocking SQL might happen
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						try {
 							BoroughChunk boroughChunk = Borough.getClaimStore().getChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 							if (boroughChunk.isChunkClaimed()) {
@@ -75,7 +75,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "extend":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have ownership permissions on this claim?");
 						} else {
@@ -117,7 +117,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "delete":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have ownership permissions on this claim?");
 						} else if (args.length > 2 && args[2].equalsIgnoreCase("confirm")) {
@@ -146,7 +146,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "info":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ".");
 						} else {
@@ -189,7 +189,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "add-builder":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator or greater permissions on this claim?");
 						} else {
@@ -235,7 +235,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "add-moderator":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have administrative or greater permissions on this claim?");
 						} else {
@@ -279,7 +279,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "add-admin":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have administrative permissions on this claim?");
 						} else {
@@ -324,7 +324,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "remove-user":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator permissions on this claim?");
 						} else {
@@ -378,7 +378,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "add-rule":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have moderator permissions on this claim?");
 						} else {
@@ -437,7 +437,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 			case "tp":
 				if (args.length > 1) {
 					// Go async for SQL
-					Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+					Borough.mysqlThreadPool.submit(() -> {
 						if (!Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER).contains(args[1]) && !sender.hasPermission("pcn.staff")) {
 							sender.sendMessage(Borough.messagingPrefix + "Unknown claim " + args[1] + ". Do you have build permissions on this claim?");
 						} else {
@@ -472,7 +472,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 				break;
 			case "list":
 				// Go async for SQL
-				Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+				Borough.mysqlThreadPool.submit(() -> {
 					try {
 						// Only staff can see other people's stuff
 						String username = sender.getName();

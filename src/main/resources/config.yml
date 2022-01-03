@@ -1,5 +1,7 @@
 debug: false
 
+worker_pool_size: 5
+
 mysql:
   ip: localhost
   port: 3306

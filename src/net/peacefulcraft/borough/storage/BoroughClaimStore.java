@@ -193,7 +193,7 @@ public class BoroughClaimStore {
 		}
 
 		// Async refresh the users claim caches
-		Borough._this().getServer().getScheduler().runTaskAsynchronously(Borough._this(), () -> {
+		Borough.mysqlThreadPool.execute(() -> {
 			claim.getBuilders().forEach((uuid) -> {
 				this.getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER);
 			});
