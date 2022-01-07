@@ -133,6 +133,7 @@ public class BoroughClaimStore {
 	 * @return Claim meta object or NULL of no such claim exists
 	 */
 	public BoroughClaim getClaim(String name) throws IllegalArgumentException {
+		// check cache
 		BoroughClaim claim = null;
 		synchronized(this.claimCache) {
 			claim = this.claimCache.get(name);
@@ -145,6 +146,7 @@ public class BoroughClaimStore {
 		}
 
 		if (claim == null) {
+		// check SQL
 			claim = SQLQueries.getBoroughClaim(nameParts[1], owner);
 			synchronized(this.claimCache) {
 				// Other threads may have been fetching while we were.
@@ -156,9 +158,35 @@ public class BoroughClaimStore {
 					return winner;
 				}
 			}
-		} else {
-			synchronized(this.claimCache) {
-				this.claimCache.put(getClaimKey(nameParts[0], nameParts[1]), claim);
+		}
+
+		return claim;
+	}
+
+	/**
+	 * Get the BuroughClaim meta object by the given claim name. Performs blocking SQL work.
+	 * @param name Claim name
+	 * @param forceCanonical Force SQL query, bypassing memory cache
+	 * @return Claim meta object or NULL of no such claim exists
+	 */
+	public BoroughClaim getClaim(String name, boolean forceCanonical) throws IllegalArgumentException {
+		if (!forceCanonical) { return this.getClaim(name); }
+		
+		String[] nameParts = splitClaimKey(name);
+		UUID owner = Borough.getUUIDCache().usernameToUUID(nameParts[0]);
+		if (owner == null) {
+			throw new IllegalArgumentException("No known user " + nameParts[0] + ".");
+		}
+
+		BoroughClaim claim = SQLQueries.getBoroughClaim(nameParts[1], owner);
+		synchronized(this.claimCache) {
+			// Other threads may have been fetching while we were.
+			// If they beat us, yeild and use their objects.
+			BoroughClaim winner = this.claimCache.get(getClaimKey(nameParts[0], nameParts[1]));
+			if (winner == null) {
+				claimCache.put(getClaimKey(nameParts[0], nameParts[1]), claim);
+			} else {
+				return winner;
 			}
 		}
 
@@ -251,13 +279,30 @@ public class BoroughClaimStore {
 		synchronized(this.chunkCache) {
 			chunk = this.chunkCache.get(getChunkKey(world, x, z));
 		}
-		
-		// Check DB
+
 		if (chunk == null) {
-			chunk = SQLQueries.getBoroughChunk(world, x, z);
-			synchronized(this.chunkCache) {
-				this.chunkCache.put(getChunkKey(world, x, z), chunk);
-			}
+			return this.getChunk(world, x, z, true);
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Get claim information about the requested chunk. Performs blocking SQL work.
+	 * 
+	 * @param world World chunk is in
+	 * @param x Chunk x coordinate. (Not world coordinates)
+	 * @param z Chunk z coordinate. (Not world coordinates)
+	 * @param forceCanonical Skip memory cache and only trust SQL store.
+	 * @return BoroughChunk object.
+	 */
+	public BoroughChunk getChunk(String world, int x, int z, boolean forceCanonical) {
+		if (!forceCanonical) { return this.getChunk(world, x, z); }
+
+		// Check DB
+		BoroughChunk chunk = SQLQueries.getBoroughChunk(world, x, z);
+		synchronized(this.chunkCache) {
+			this.chunkCache.put(getChunkKey(world, x, z), chunk);
 		}
 
 		// Doesn't exist. Return wrapper with null claim meta.
