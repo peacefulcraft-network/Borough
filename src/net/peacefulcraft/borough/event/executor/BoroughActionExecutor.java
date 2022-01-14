@@ -21,7 +21,6 @@ import net.peacefulcraft.borough.event.actions.BoroughBreakEvent;
 import net.peacefulcraft.borough.event.actions.BoroughBuildEvent;
 import net.peacefulcraft.borough.event.actions.BoroughInteractEvent;
 import net.peacefulcraft.borough.storage.BoroughChunk;
-import net.peacefulcraft.borough.storage.BoroughClaimStore;
 import net.peacefulcraft.borough.utilities.BoroughMessanger;
 import net.peacefulcraft.borough.utilities.ItemLists;
 
