@@ -30,6 +30,12 @@ import net.peacefulcraft.borough.event.executor.BoroughActionExecutor;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.utilities.ItemLists;
 
+/**
+ * Reworked player cache event listeners for block events 1/14/22
+ * 
+ * Modeled after Towny block listeners for security of chunk permissions
+ * and to fit the existing Borough model
+ */
 public class PlayerCacheBlockListeners implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
