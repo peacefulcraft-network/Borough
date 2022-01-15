@@ -155,7 +155,7 @@ public class CombatUtil {
 				if (defenderChunk == null) { return false; }
 
 				// Prevent projectiles fired by non-player harming non-player. Allow damage no non-passive
-				if (projectileAttacker != null && !EntityTypeLists.isPassive(defender.getType()) { return true; }
+				if (projectileAttacker != null && !EntityTypeLists.isPassive(defender.getType())) { return true; }
 
 				// Allow wolves to attack non-passive entities
 				if (attacker instanceof Wolf && !EntityTypeLists.isPassive(defender.getType())) {
