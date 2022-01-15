@@ -36,7 +36,7 @@ import net.peacefulcraft.borough.utilities.ItemLists;
  * Modeled after Towny block listeners for security of chunk permissions
  * and to fit the existing Borough model
  */
-public class PlayerCacheBlockListeners implements Listener {
+public class PlayerBlockListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent ev) {
