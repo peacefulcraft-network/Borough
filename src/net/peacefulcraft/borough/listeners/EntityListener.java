@@ -197,10 +197,12 @@ public class EntityListener implements Listener {
 			}
 		}
 
-		if (block.getType() == Material.STONE_PRESSURE_PLATE) {
-			if (entity instanceof Creature) {
-				ev.setCancelled(true);
-				return;
+		if (Borough.getConfiguration().isCreatureTriggeringPressurPlateEnabled()) {
+			if (block.getType() == Material.STONE_PRESSURE_PLATE) {
+				if (entity instanceof Creature) {
+					ev.setCancelled(true);
+					return;
+				}
 			}
 		}
 	}

@@ -81,4 +81,6 @@ public abstract class Configuration {
 	public boolean isPlayerTrampleEnabled() { return this.config.getBoolean("world.player_trample"); }
 	/**@return True if enderman can pick up blocks */
 	public boolean isEndermanGriefEnabled() { return this.config.getBoolean("world.enderman_grief"); }
+	/**@return True if creatures can trigger pressure plate */
+	public boolean isCreatureTriggeringPressurPlateEnabled() { return this.config.getBoolean("world.creature_trigger_pressure_plate"); }
 }
