@@ -14,18 +14,25 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.ThrownPotion;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakEvent;
+import org.bukkit.event.hanging.HangingPlaceEvent;
+import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.BlockProjectileSource;
 
@@ -252,6 +259,120 @@ public class EntityListener implements Listener {
 				break;
 			default:		
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onEntityExplode(EntityExplodeEvent ev) {
+		List<Block> blocks = BoroughActionExecutor.filterExplodeableBlocks(ev.blockList(), null, ev.getEntity(), ev);
+		ev.blockList().clear();
+		ev.blockList().addAll(blocks);
+
+		if (ev.blockList().isEmpty()) { return; }
+		// TODO: Look into some sort of regen service
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onEntityCombustByEntity(EntityCombustByEntityEvent ev) {
+		Entity combuster = ev.getCombuster();
+		Entity defender = ev.getEntity();
+
+		LivingEntity attacker = null;
+		if (combuster instanceof Projectile) {
+			Projectile projectile = (Projectile)combuster;
+
+			Object source = projectile.getShooter();
+			if (source instanceof BlockProjectileSource) {
+				if (CombatUtil.preventDispenserDamage(((BlockProjectileSource)source).getBlock(), defender, DamageCause.PROJECTILE)) {
+					combuster.remove();
+					ev.setCancelled(true);
+					return;
+				}
+			} else {
+				attacker = (LivingEntity) source;
+			}
+
+			if (attacker != null) {
+				if (CombatUtil.preventDamageCall(attacker, defender, DamageCause.PROJECTILE)) {
+					combuster.remove();
+					ev.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onHangingBreak(HangingBreakEvent ev) {
+		Entity hang = ev.getEntity();
+
+		// If the object was removed by physics and it is a registered hanging entity
+		if (ev.getCause().equals((RemoveCause.PHYSICS)) && ItemLists.HANGING_ENTITIES.contains(hang.getType().name())) {
+			Location loc = hang.getLocation().add(hang.getFacing().getOppositeFace().getDirection());
+			
+			BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+			if (chunk == null) { return; }
+
+			// If the chunk is claimed and prevents block damage cancel event
+			if (chunk.isChunkClaimed() && !chunk.doesAllowBlockDamage()) {
+				ev.setCancelled(true);
+				return;
+			}
+		}
+
+		if (ev.getCause().equals(RemoveCause.PHYSICS) && ItemLists.ITEM_FRAMES.contains(hang.getType().name())) {
+			Block block = hang.getLocation().add(hang.getFacing().getOppositeFace().getDirection()).getBlock();
+
+			if (block.isLiquid() || block.isEmpty()) { return; }
+
+			// Preventing boats from breaking entities
+			for (Entity entity : hang.getNearbyEntities(0.5, 0.5, 0.5)) {
+				if (entity instanceof Vehicle) {
+					ev.setCancelled(true);
+					return;
+				}
+			}
+		}
+
+		// Object broken by another entity. Projectile, player, non-player, etc.
+		if (ev instanceof HangingBreakByEntityEvent) {
+			HangingBreakByEntityEvent evv = (HangingBreakByEntityEvent)ev;
+			Object remover = evv.getRemover();
+
+			// Pre-process projectiles to get origin
+			if (remover instanceof Projectile) {
+				remover = ((Projectile)remover).getShooter();
+			}
+
+			// If they are a player we process via permissions
+			if (remover instanceof Player) {
+				Material mat = EntityTypeLists.parseEntityToMaterial(ev.getEntity().getType(), Material.GRASS_BLOCK);
+				ev.setCancelled(!BoroughActionExecutor.canBreak((Player)remover, hang.getLocation(), mat));
+			} else if (remover instanceof Entity) {
+				// Protecting a claimed chunk from entity attacks. I.e. skeleton
+				BoroughChunk chunk = Borough.getClaimStore().getChunk(hang.getLocation());
+				if (chunk != null) {
+					ev.setCancelled(true);
+				}
+			}
+
+			if (ev.getCause() == RemoveCause.EXPLOSION) {
+				if (!BoroughActionExecutor.canExplosionDamageEntities(hang.getLocation(), hang, DamageCause.ENTITY_EXPLOSION)) {
+					ev.setCancelled(true);
+				} 
+			}
+		} else {
+			if (ev.getCause() == RemoveCause.EXPLOSION) {
+				if (!BoroughActionExecutor.canExplosionDamageEntities(ev.getEntity().getLocation(), ev.getEntity(), DamageCause.BLOCK_EXPLOSION)) {
+					ev.setCancelled(true);
+				}
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)	
+	public void onHangingPlace(HangingPlaceEvent ev) {
+		Material mat = EntityTypeLists.parseEntityToMaterial(ev.getEntity().getType(), Material.GRASS_BLOCK);
+		
+		ev.setCancelled(!BoroughActionExecutor.canBuild(ev.getPlayer(), ev.getEntity().getLocation(), mat));
 	}
 
 }
