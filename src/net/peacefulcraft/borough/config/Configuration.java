@@ -74,13 +74,4 @@ public abstract class Configuration {
 			Borough._this().logSevere("Unable to save configuration file.");
 		  }
 	}
-
-	/**@return True if creatures can trample crops */
-	public boolean isCreatureTrampleEnabled() { return this.config.getBoolean("world.creature_trample"); }
-	/**@return True if players can trample crops */
-	public boolean isPlayerTrampleEnabled() { return this.config.getBoolean("world.player_trample"); }
-	/**@return True if enderman can pick up blocks */
-	public boolean isEndermanGriefEnabled() { return this.config.getBoolean("world.enderman_grief"); }
-	/**@return True if creatures can trigger pressure plate */
-	public boolean isCreatureTriggeringPressurPlateEnabled() { return this.config.getBoolean("world.creature_trigger_pressure_plate"); }
 }
