@@ -173,6 +173,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									sender.sendMessage(ChatColor.GRAY + "Owned by: " + ownerUsernames.toString().subSequence(0, ownerUsernames.length() - 2));
 									sender.sendMessage(ChatColor.GRAY + "Moderators: " + moderatorUsernames.toString().subSequence(0, moderatorUsernames.length() - 2));
 									sender.sendMessage(ChatColor.GRAY + "Builders: " + builderUsernames.toString().subSequence(0, builderUsernames.length() - 2));
+									sender.sendMessage(ChatColor.GRAY + "AllowBlockDamage: " + claim.doesAllowBlockDamage());
+									sender.sendMessage(ChatColor.GRAY + "AllowFluidMovement: " + claim.doesAllowFluidMovement());
+									sender.sendMessage(ChatColor.GRAY + "AllowPvP: " + claim.doesAllowPVP());
+									sender.sendMessage(ChatColor.GRAY + "AllowPistonMovement: "+ claim.doesAllowPistonMovement());
+									sender.sendMessage(ChatColor.GRAY + "AllowTeleport: " + claim.doesAllowTeleport());
 								});
 							} catch (RuntimeException ex) {
 								sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to access information on claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
@@ -391,9 +396,9 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 								switch (args[3].toLowerCase()) {
 									case "true":
 										state = true;
-									case "false":
+									break; case "false":
 										state = false;
-									default:
+									break; default:
 										sender.sendMessage(Borough.messagingPrefix + "An error occured while trying to modify permissions on claim " + args[1] + ". Please try again. Contact staff if the issue persists.");
 										Borough._this().logSevere("User: " + sender.getName() + " used invalid boolean input attempting command: add-rule");
 								}
@@ -412,16 +417,17 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										case "allowblockdamage":
 											claim.setBlockDamage(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowBlockDamage rule on " + args[1]);
-										case "allowfluidmovement":
+										
+										break; case "allowfluidmovement":
 											claim.setFluidMovement(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowFluidMovement rule on " + args[1]);
-										case "allowpvp":
+										break; case "allowpvp":
 											claim.setPVP(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowPVP rule on " + args[1]);
-										case "allowpistonmovement":
+										break; case "allowpistonmovement":
 											claim.setBlockMovement(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowBlockMovement rule on " + args[1]);
-										default:
+										break; default:
 											sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects valid rules including: allowBlockDamage, allowFluidMovement, allowPVP. Please try again.");
 									}
 
