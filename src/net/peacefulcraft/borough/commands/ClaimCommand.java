@@ -418,6 +418,9 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										case "allowpvp":
 											claim.setPVP(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowPVP rule on " + args[1]);
+										case "allowpistonmovement":
+											claim.setBlockMovement(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowBlockMovement rule on " + args[1]);
 										default:
 											sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects valid rules including: allowBlockDamage, allowFluidMovement, allowPVP. Please try again.");
 									}
