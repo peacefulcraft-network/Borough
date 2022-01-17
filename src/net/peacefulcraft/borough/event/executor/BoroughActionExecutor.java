@@ -20,6 +20,7 @@ import net.peacefulcraft.borough.event.actions.BoroughActionEvent;
 import net.peacefulcraft.borough.event.actions.BoroughBreakEvent;
 import net.peacefulcraft.borough.event.actions.BoroughBuildEvent;
 import net.peacefulcraft.borough.event.actions.BoroughInteractEvent;
+import net.peacefulcraft.borough.event.actions.BoroughItemUseEvent;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.utilities.BoroughMessanger;
 import net.peacefulcraft.borough.utilities.ItemLists;
@@ -45,7 +46,7 @@ public class BoroughActionExecutor {
 		/**
 		 * Checking the chunk permissions of player
 		 */
-		if (event.isClaimed() && event.getBoroughChunk().canUserBuild(player.getUniqueId())) {
+		if (event.isClaimed() && !event.getBoroughChunk().canUserBuild(player.getUniqueId())) {
 			event.setCancelled(true);
 			//TODO: Set more specific error message here
 			event.setMessage("You do not have permission to do that in this claim!");
@@ -148,6 +149,19 @@ public class BoroughActionExecutor {
 	public static boolean canInteract(Player player, Location loc, Material mat) {
 		BoroughInteractEvent event = new BoroughInteractEvent(player, loc, mat, loc.getBlock(), Borough.getClaimStore().getChunk(loc), false);
 		return isAllowedAction(player, loc, mat, ActionType.INTERACT, event);
+	}
+
+	/**
+	 * Can a player use items of this material at this location
+	 * 
+	 * @param player Player involved in this event
+	 * @param loc Location of attempted event
+	 * @param mat Material involved in this event
+	 * @return True if allowed, false otherwise
+	 */
+	public static boolean canItemUse(Player player, Location loc, Material mat) {
+		BoroughItemUseEvent event = new BoroughItemUseEvent(player, loc, mat, Borough.getClaimStore().getChunk(loc), false);
+		return isAllowedAction(player, loc, mat, ActionType.ITEMUSE, event);
 	}
 
 	/**
