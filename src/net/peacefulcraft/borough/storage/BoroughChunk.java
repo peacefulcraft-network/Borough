@@ -40,7 +40,8 @@ public class BoroughChunk {
 
 	public synchronized boolean canUserBuild(UUID user) {
 		return (
-			this.getClaimMeta().getBuilders().contains(user)
+			this.getClaimMeta().isPublic()
+			|| this.getClaimMeta().getBuilders().contains(user)
 			|| this.getClaimMeta().getModerators().contains(user)
 			|| this.getClaimMeta().getOwners().contains(user)
 		);

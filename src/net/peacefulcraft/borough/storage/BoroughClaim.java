@@ -104,6 +104,19 @@ public class BoroughClaim {
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_PISTON_MOVEMENT, b);
 		}
 
+	/**
+	 * Is this claim open to the public
+	 * If true, other flags still take precedence
+	 */
+	private Boolean isPublic;
+		public Boolean isPublic() { return this.isPublic; }
+		public void setPublic(Boolean b) {
+			synchronized(this) {
+				this.isPublic = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.PUBLIC, b);
+		}
+
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders) {
 		this.claimId = claimId;
 		this.claimName = claimName;
@@ -117,6 +130,7 @@ public class BoroughClaim {
 		this.allowFluidMovement = true;
 		this.allowPVP = true;
 		this.allowPistonMovement = true;
+		this.isPublic = false;
 	}
 
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders, Boolean allowBlockDamage, Boolean allowFluidMovement, Boolean allowPvP) {
@@ -131,6 +145,8 @@ public class BoroughClaim {
 		this.allowBlockDamage = allowBlockDamage;
 		this.allowFluidMovement = allowFluidMovement;
 		this.allowPVP = allowPvP;
+		this.allowPistonMovement = true;
+		this.isPublic = false;
 	}
 
 	/**
