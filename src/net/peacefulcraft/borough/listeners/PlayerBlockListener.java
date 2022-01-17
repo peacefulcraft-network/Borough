@@ -186,11 +186,41 @@ public class PlayerBlockListener implements Listener {
 		BoroughChunk fromChunk = Borough.getClaimStore().getChunk(block.getLocation());
 		BoroughChunk toChunk = Borough.getClaimStore().getChunk(blockTo.getLocation());
 
-		// If chunks ids are the same Claim we process from from chunk config
-		if (fromChunk.getClaimMeta().getClaimId() == toChunk.getClaimMeta().getClaimId()) { 
+		/**
+		 * If both chunks are claimed we compare against their rulesets
+		 * BOTH claims must have permissions for this event
+		 */
+		if (fromChunk.isChunkClaimed() && toChunk.isChunkClaimed() ) {
+			if (reason == MovementReason.FLUID && fromChunk.doesAllowFluidMovement() && toChunk.doesAllowFluidMovement()) { return true; }
+			if (reason == MovementReason.PISTON && fromChunk.doesAllowPistonMovement() && toChunk.doesAllowPistonMovement()) { return true; }
+			// For other we want to ensure the OTHER movement occurs only if the chunks share a claim
+			// This is to prevent OTHER movement from one persons chunk to anothers
+			// Since we know both are claimed we can check their IDs directly
+			if (reason == MovementReason.OTHER && fromChunk.getClaimMeta().getClaimId() == toChunk.getClaimMeta().getClaimId()) { return true; }
+		}
+
+		/**
+		 * From chunk is wild. To Chunk is claimed
+		 * We compare against to chunk permissions
+		 * Since we are not moving INTO the wild we do not need allow wild
+		 */
+		if (!fromChunk.isChunkClaimed() && toChunk.isChunkClaimed()) {
+			if (reason == MovementReason.FLUID && toChunk.doesAllowFluidMovement()) { return true; }
+			if (reason == MovementReason.PISTON && toChunk.doesAllowPistonMovement()) { return true;}
+			// In general we do not want OTHER block movements to go from unclaimed to claimed
+			if (reason == MovementReason.OTHER) { return false; }
+		}
+
+		/**
+		 * If from chunk is claimed we check against from chunk permissions
+		 * allowWild must be true and fromChunk must have permission for this event
+		 */
+		if (fromChunk.isChunkClaimed() && !toChunk.isChunkClaimed()) {
 			if (reason == MovementReason.FLUID && fromChunk.doesAllowFluidMovement()) { return true; }
 			if (reason == MovementReason.PISTON && fromChunk.doesAllowPistonMovement()) { return true; }
-		}
+			// We allow OTHER block movements from claimed to unclaimed
+			if (reason == MovementReason.OTHER) { return true; }
+		}		
 		return false;
 	}
 
