@@ -16,8 +16,13 @@ import net.peacefulcraft.borough.commands.ClaimCommand;
 import net.peacefulcraft.borough.commands.UnclaimCommand;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
+import net.peacefulcraft.borough.listeners.EntityListener;
+import net.peacefulcraft.borough.listeners.PlayerBlockListener;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
+import net.peacefulcraft.borough.listeners.PlayerListener;
 import net.peacefulcraft.borough.listeners.PlayerMovementListener;
+import net.peacefulcraft.borough.listeners.VehicleListener;
+import net.peacefulcraft.borough.listeners.WorldListeners;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
@@ -147,7 +152,13 @@ public class Borough extends JavaPlugin {
 
 	private void setupEventListeners() {
 		this.getServer().getPluginManager().registerEvents(new ChunkCacheEventListeners(), this);
-		this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
+		//this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerMovementListener(), this);
+
+		this.getServer().getPluginManager().registerEvents(new PlayerBlockListener(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		this.getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		this.getServer().getPluginManager().registerEvents(new VehicleListener(), this);
+		this.getServer().getPluginManager().registerEvents(new WorldListeners(), this);
 	}
 }
