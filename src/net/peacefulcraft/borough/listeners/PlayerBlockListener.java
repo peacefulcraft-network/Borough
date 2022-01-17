@@ -78,14 +78,14 @@ public class PlayerBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockPistonRetract(BlockPistonRetractEvent ev) {
-		if (!canBlockMove(ev.getBlock(), ev.isSticky() ? ev.getBlock().getRelative(ev.getDirection().getOppositeFace()) : ev.getBlock().getRelative(ev.getDirection()), false)) {
+		if (!canBlockMove(ev.getBlock(), ev.isSticky() ? ev.getBlock().getRelative(ev.getDirection().getOppositeFace()) : ev.getBlock().getRelative(ev.getDirection()), false, MovementReason.PISTON)) {
 			ev.setCancelled(true);
 		}
 
 		List<Block> blocks = ev.getBlocks();
 		if (!blocks.isEmpty()) {
 			blocks.forEach((block) -> {
-				if (!canBlockMove(block, block.getRelative(ev.getDirection()), false)) {
+				if (!canBlockMove(block, block.getRelative(ev.getDirection()), false, MovementReason.PISTON)) {
 					ev.setCancelled(true);
 				}
 			});
@@ -94,14 +94,14 @@ public class PlayerBlockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockPistonExtend(BlockPistonExtendEvent ev) {
-		if (!canBlockMove(ev.getBlock(), ev.getBlock().getRelative(ev.getDirection()), true)) {
+		if (!canBlockMove(ev.getBlock(), ev.getBlock().getRelative(ev.getDirection()), true, MovementReason.PISTON)) {
 			ev.setCancelled(true);
 		}
 
 		List<Block> blocks = ev.getBlocks();
 		if (!blocks.isEmpty()) {
 			blocks.forEach((block) -> {
-				if (!canBlockMove(block, block.getRelative(ev.getDirection()), true)) {
+				if (!canBlockMove(block, block.getRelative(ev.getDirection()), true, MovementReason.PISTON)) {
 					ev.setCancelled(true);
 				}
 			});
@@ -131,7 +131,11 @@ public class PlayerBlockListener implements Listener {
 	public void onBlockFromTo(BlockFromToEvent ev) {
 		if (ev.getBlock().getType() == Material.DRAGON_EGG) { return; }
 
-		if (!canBlockMove(ev.getBlock(), ev.getToBlock(), true)) {
+		if (ev.getBlock().isLiquid() && !canBlockMove(ev.getBlock(), ev.getToBlock(), true, MovementReason.FLUID)) {
+			ev.setCancelled(true);
+		} 
+
+		if (!ev.getBlock().isLiquid() && !canBlockMove(ev.getBlock(), ev.getToBlock(), true, MovementReason.OTHER)) {
 			ev.setCancelled(true);
 		}
 	}
@@ -146,7 +150,7 @@ public class PlayerBlockListener implements Listener {
 
 		if (!ItemLists.BUCKETS.contains(mat.name()) && mat != Material.BONE_MEAL && mat != Material.HONEYCOMB) { return; }
 
-		if (!canBlockMove(ev.getBlock(), ev.getBlock().getRelative(((Directional) ev.getBlock().getBlockData()).getFacing()), true)) {
+		if (!canBlockMove(ev.getBlock(), ev.getBlock().getRelative(((Directional) ev.getBlock().getBlockData()).getFacing()), true, MovementReason.OTHER)) {
 			ev.setCancelled(true);
 		}
 	}
@@ -176,16 +180,21 @@ public class PlayerBlockListener implements Listener {
 	 * @param allowWild If block is allowed to move into the wilderness
 	 * @return True if allowed, false otherwise
 	 */
-	private boolean canBlockMove(Block block, Block blockTo, boolean allowWild) {
+	private boolean canBlockMove(Block block, Block blockTo, boolean allowWild, MovementReason reason) {
 		BoroughBlock from = new BoroughBlock(block);
 		BoroughBlock to = new BoroughBlock(blockTo);
 
+		// If block is the same, wild is allowed and to chunk is not claimed, neither are claimed
 		if (from.equals(to) || (allowWild && !to.isClaimed()) || (!to.isClaimed() && !from.isClaimed())) { return true; }
 
 		BoroughChunk fromChunk = Borough.getClaimStore().getChunk(block.getLocation());
 		BoroughChunk toChunk = Borough.getClaimStore().getChunk(blockTo.getLocation());
 
-		if (fromChunk.getClaimMeta().getClaimId() == toChunk.getClaimMeta().getClaimId()) { return true; }
+		// If chunks ids are the same Claim we process from from chunk config
+		if (fromChunk.getClaimMeta().getClaimId() == toChunk.getClaimMeta().getClaimId()) { 
+			if (reason == MovementReason.FLUID && fromChunk.doesAllowFluidMovement()) { return true; }
+			if (reason == MovementReason.PISTON && fromChunk.doesAllowPistonMovement()) { return true; }
+		}
 		return false;
 	}
 
@@ -218,6 +227,13 @@ public class PlayerBlockListener implements Listener {
 			// lol
 			return (o instanceof BoroughBlock) ? this.block.equals(((BoroughBlock)o).getBlock()) : false;
 		}
+	}
+
+	/**
+	 * Enum to provide clarity on fromTo events
+	 */
+	private enum MovementReason {
+		PISTON, FLUID, OTHER;
 	}
 
 }

@@ -39,12 +39,15 @@ public class BoroughActionExecutor {
 	 * @param mat Material involved in event
 	 * @param action Action player is taking
 	 * @param event ActionEvent
-	 * @return
+	 * @return True if action is allowed, false otherwise. 
 	 */
 	private static boolean isAllowedAction(Player player, Location loc, Material mat, ActionType action, BoroughActionEvent event) {
 		
 		/**
 		 * Checking the chunk permissions of player
+		 * 
+		 * All permissions are currently based on their Build Permissions.
+		 * // TODO: Look into a way to break this up further by actionType
 		 */
 		if (event.isClaimed() && !event.getBoroughChunk().canUserBuild(player.getUniqueId())) {
 			event.setCancelled(true);

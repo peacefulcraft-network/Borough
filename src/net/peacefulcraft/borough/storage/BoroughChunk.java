@@ -57,4 +57,8 @@ public class BoroughChunk {
 	public synchronized boolean doesAllowPVP() {
 		return this.getClaimMeta().doesAllowPVP();
 	}
+
+	public synchronized boolean doesAllowPistonMovement() {
+		return this.getClaimMeta().doesAllowPistonMovement();
+	}
 }
