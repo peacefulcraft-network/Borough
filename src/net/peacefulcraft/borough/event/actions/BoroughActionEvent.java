@@ -79,7 +79,7 @@ public class BoroughActionEvent extends Event implements Cancellable {
 	 * @return True if occurred in claimed chunk, false otherwise
 	 */
 	public boolean isClaimed() {
-		return chunk == null;
+		return chunk != null;
 	}
 
 	/**
