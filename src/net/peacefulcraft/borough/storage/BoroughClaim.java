@@ -78,6 +78,20 @@ public class BoroughClaim {
 		}
 
 	/**
+	 * Does this claim allow teleporting within it
+	 * This prevents teleport items from being used ONLY.
+	 * Does not block commands
+	 */
+	private Boolean allowTeleport;
+		public Boolean doesAllowTeleport() { return this.allowTeleport; }
+		public void setTeleport(Boolean b) {
+			synchronized(this) {
+				this.allowTeleport = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.TELEPORT, b);
+		}
+
+	/**
 	 * Does this claim allow piston movement in the claim
 	 * If false, pistons and their moved blocks cannot move INTO this claim
 	 */

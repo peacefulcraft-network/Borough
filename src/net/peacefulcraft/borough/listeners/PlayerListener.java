@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -178,9 +177,9 @@ public class PlayerListener implements Listener {
 
 		Player p = ev.getPlayer();
 		if (ev.getCause() == TeleportCause.ENDER_PEARL) {
-			ev.setCancelled(!BoroughActionExecutor.canItemUse(p, ev.getTo(), Material.ENDER_PEARL));
+			ev.setCancelled(!BoroughActionExecutor.canTeleport(p, ev.getTo()));
 		} else if (ev.getCause() == TeleportCause.CHORUS_FRUIT) {
-			ev.setCancelled(!(BoroughActionExecutor.canItemUse(p, ev.getTo(), Material.CHORUS_FRUIT)));
+			ev.setCancelled(!(BoroughActionExecutor.canTeleport(p, ev.getTo())));
 		}
 	}
 

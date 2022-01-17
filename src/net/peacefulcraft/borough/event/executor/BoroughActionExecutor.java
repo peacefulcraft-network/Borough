@@ -168,6 +168,21 @@ public class BoroughActionExecutor {
 	}
 
 	/**
+	 * Can a player teleport at this location.
+	 * Player needs build permissions and claim must allow teleporting
+	 * 
+	 * @param player Player involved in this event
+	 * @param loc Location of this event
+	 * @return True if allowed, false otherwise
+	 */
+	public static boolean canTeleport(Player player, Location loc) {
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+		if (chunk == null) { return true; }
+
+		return (chunk.isChunkClaimed() && chunk.canUserBuild(player.getUniqueId()) && chunk.doesAllowTeleport());
+	}
+
+	/**
 	 * Filters out blocks which should not be exploded from an event list
 	 * 
 	 * @param blocks List of blocks involved in explode event
