@@ -40,16 +40,12 @@ public class PlayerBlockListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockBreak(BlockBreakEvent ev) {
-		if (ev.getPlayer().hasPermission("pcn.staff")) { return; }
-
 		Block block = ev.getBlock();
 		ev.setCancelled(!BoroughActionExecutor.canBreak(ev.getPlayer(), block.getLocation(), block.getType()));
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBlockPlace(BlockPlaceEvent ev) {
-		if (ev.getPlayer().hasPermission("pcn.staff")) { return; }
-
 		Block block = ev.getBlock();
 
 		// Allowing portals to be placed
