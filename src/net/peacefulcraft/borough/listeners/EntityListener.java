@@ -7,6 +7,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityBreakDoorEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,7 +30,9 @@ import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.LingeringPotionSplashEvent;
+import org.bukkit.event.entity.PigZapEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.hanging.HangingPlaceEvent;
@@ -197,7 +201,7 @@ public class EntityListener implements Listener {
 
 				// If block is some sort of redstone switch
 				String matName = block.getType().name();
-				if (ItemLists.BUTTONS.contains(matName) || ItemLists.PRESSURE_PLATES.contains(matName) || matName.equals("LEVER")) {
+				if (ItemLists.isSwitch(matName)) {
 					ev.setCancelled(!!BoroughActionExecutor.canInteract((Player)passenger, block.getLocation(), block.getType()));
 					return;
 				}
@@ -373,6 +377,50 @@ public class EntityListener implements Listener {
 		Material mat = EntityTypeLists.parseEntityToMaterial(ev.getEntity().getType(), Material.GRASS_BLOCK);
 		
 		ev.setCancelled(!BoroughActionExecutor.canBuild(ev.getPlayer(), ev.getEntity().getLocation(), mat));
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPigHitByLightning(PigZapEvent ev) {
+		// This event for some reason needs to be specifically monitored
+		if (!BoroughActionExecutor.canExplosionDamageEntities(ev.getEntity().getLocation(), ev.getEntity(), DamageCause.LIGHTNING)) {
+			ev.setCancelled(true);
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onProjectileHitSwitch(ProjectileHitEvent ev) {
+		// We don't care if no block is hit or if shooter is not player
+		if (ev.getHitBlock() == null || !(ev.getEntity().getShooter() instanceof Player)) { return; } 
+
+		Block block = ev.getHitBlock().getRelative(ev.getHitBlockFace());
+
+		/**
+		 * Protecting against unwanted switches and chorus flower breaking
+		 */
+		if ((ItemLists.PROJECTILE_TRIGGERED_REDSTONE.contains(block.getType().name()) && ItemLists.isSwitch(block.getType().name())) || block.getType().equals(Material.CHORUS_FLOWER)) {
+			if (!BoroughActionExecutor.canInteract((Player) ev.getEntity().getShooter(), block.getLocation(), block.getType())) {
+				/**
+				 * Not possible to cancel the event using normal means.
+				 * TODO: Look into a replacement because replacing a block
+				 * in this manner can be disgusting
+				 */
+				BlockData data = block.getBlockData();
+				block.setType(Material.AIR);
+				Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
+					block.setBlockData(data);
+				});
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onEntityBreakDoor(EntityBreakDoorEvent ev) {
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(ev.getBlock().getLocation());
+		if (chunk == null) { return; }
+
+		if (!chunk.doesAllowBlockDamage()) {
+			ev.setCancelled(true);
+		}
 	}
 
 }

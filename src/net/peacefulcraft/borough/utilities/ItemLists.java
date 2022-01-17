@@ -158,4 +158,14 @@ public class ItemLists {
 			default -> null;
 		};
 	}
+
+	/**
+	 * Determiens if a material name is a switch type
+	 * 
+	 * @param name Name of material
+	 * @return True if is a switch material
+	 */
+	public static boolean isSwitch(String name) {
+		return BUTTONS.contains(name) || PRESSURE_PLATES.contains(name) || name.equals("LEVER") || name.equals("TARGET");
+	}
 }
