@@ -4,15 +4,24 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.type.RespawnAnchor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
+import net.peacefulcraft.borough.event.actions.ActionType;
 import net.peacefulcraft.borough.event.executor.BoroughActionExecutor;
+import net.peacefulcraft.borough.utilities.EntityTypeLists;
 import net.peacefulcraft.borough.utilities.ItemLists;
 
 public class PlayerListener implements Listener {
@@ -91,9 +100,98 @@ public class PlayerListener implements Listener {
 				clickedMat == Material.BEACON || clickedMat == Material.DRAGON_EGG ||
 				clickedMat == Material.COMMAND_BLOCK) {
 
-				
+				ev.setCancelled(!BoroughActionExecutor.canBreak(player, clickedBlock.getLocation(), clickedMat));
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPlayerInteractArmorStand(PlayerArmorStandManipulateEvent ev) {
+		// Process via break permissions
+		ev.setCancelled(!BoroughActionExecutor.canBreak(ev.getPlayer(), ev.getRightClicked().getLocation(), Material.ARMOR_STAND));
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPlayerInteractEntity(PlayerInteractAtEntityEvent ev) {
+		
+		// An entity was right clicked
+		if (ev.getRightClicked() != null) {
+			Player p = ev.getPlayer();
+			Material mat = null;
+			Material item = p.getPlayer().getInventory().getItemInMainHand().getType();
+
+			ActionType action = ActionType.BREAK;
+
+			switch (ev.getRightClicked().getType()) {
+				case PUFFERFISH:
+				case TROPICAL_FISH:
+				case SALMON:
+				case COD:
+				case ITEM_FRAME:
+				case GLOW_ITEM_FRAME:
+				case PAINTING:
+				case LEASH_HITCH:
+				case MINECART_COMMAND:
+				case MINECART_TNT:
+				case MINECART_MOB_SPAWNER:
+				case AXOLOTL:
+					mat = EntityTypeLists.parseEntityToMaterial(ev.getRightClicked().getType());
+					break;
+				case SHEEP:
+				case WOLF:
+				// Block dying of sheep and wolves
+					if (item != null && ItemLists.DYES.contains(item.name())) {
+						mat = item;
+						break;
+					}
+				case MINECART_CHEST:
+				case MINECART_FURNACE:
+				case MINECART_HOPPER:
+					mat = EntityTypeLists.parseEntityToMaterial(ev.getRightClicked().getType());
+					action = ActionType.INTERACT;
+					break;
+				default:
+			}
+
+			// material was processed and action was committed
+			if (mat != null) {
+				if (action == ActionType.BREAK) {
+					ev.setCancelled(!BoroughActionExecutor.canBreak(p, ev.getRightClicked().getLocation(), mat));
+					return;
+				}
+
+				if (action == ActionType.INTERACT) {
+					ev.setCancelled(!BoroughActionExecutor.canInteract(p, ev.getRightClicked().getLocation(), mat));
+					return;
+				}
+			}
+
+			if (item == Material.NAME_TAG) {
+				ev.setCancelled(!BoroughActionExecutor.canBreak(p, ev.getRightClicked().getLocation(), mat));
+				return;
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPlayerTeleport(PlayerTeleportEvent ev) {
+
+		Player p = ev.getPlayer();
+		if (ev.getCause() == TeleportCause.ENDER_PEARL) {
+			ev.setCancelled(!BoroughActionExecutor.canItemUse(p, ev.getTo(), Material.ENDER_PEARL));
+		} else if (ev.getCause() == TeleportCause.CHORUS_FRUIT) {
+			ev.setCancelled(!(BoroughActionExecutor.canItemUse(p, ev.getTo(), Material.CHORUS_FRUIT)));
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPlayerTakeLecturnBook(PlayerTakeLecternBookEvent ev) {
+		ev.setCancelled(!BoroughActionExecutor.canBreak(ev.getPlayer(), ev.getLectern().getLocation(), Material.LECTERN));
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onPlayerEggThrow(PlayerEggThrowEvent ev) {
+		ev.setHatching(!BoroughActionExecutor.canItemUse(ev.getPlayer(), ev.getEgg().getLocation(), Material.EGG));
 	}
 
 	/**
