@@ -221,7 +221,7 @@ public class CombatUtil {
 		if (chunk != null) {
 			// TODO: Perform additional checks against the world level permissions
 			// and further against individual claim types. I.e. arena?
-			return chunk.doesAllowPVP();
+			return !chunk.doesAllowPVP();
 		}
 		return true;
 	}
