@@ -22,7 +22,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
-import net.peacefulcraft.borough.utilities.EntityHandler;
+import net.peacefulcraft.borough.utilities.EntityTypeLists;
 import net.peacefulcraft.borough.utilities.ItemClassifier;
 
 import java.util.List;
@@ -117,7 +117,7 @@ public class PlayerCacheEventListeners implements Listener {
 
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 
-		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId()) && EntityHandler.isPassive(ev.getRightClicked().getType())) {
+		if (!p.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(p.getUniqueId()) && EntityTypeLists.isPassive(ev.getRightClicked().getType())) {
 			Borough._this().logDebug("[PlayerCache] Cancel PlayerInteractEntityEvent.");
 			ev.setCancelled(true);
 		}
@@ -152,7 +152,7 @@ public class PlayerCacheEventListeners implements Listener {
 				ev.setCancelled(true);
 			}
 		} else if ((e instanceof Player) && !(vic instanceof Player)) {
-			if (!e.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(e.getUniqueId()) && EntityHandler.isPassive(vic.getType())) {
+			if (!e.hasPermission("pcn.staff") && chunk.isChunkClaimed() && !chunk.canUserBuild(e.getUniqueId()) && EntityTypeLists.isPassive(vic.getType())) {
 				Borough._this().logDebug("[PlayerCache] Cancel EntityDamagePassiveEvent.");
 				ev.setCancelled(true);
 			}

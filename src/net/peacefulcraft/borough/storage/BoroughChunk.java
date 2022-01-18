@@ -40,7 +40,9 @@ public class BoroughChunk {
 
 	public synchronized boolean canUserBuild(UUID user) {
 		return (
-			this.getClaimMeta().getBuilders().contains(user)
+			this.getClaimMeta() == null // User can build in the wilderness
+			/*this.getClaimMeta().isPublic()*/
+			|| this.getClaimMeta().getBuilders().contains(user)
 			|| this.getClaimMeta().getModerators().contains(user)
 			|| this.getClaimMeta().getOwners().contains(user)
 		);
@@ -56,5 +58,13 @@ public class BoroughChunk {
 
 	public synchronized boolean doesAllowPVP() {
 		return this.getClaimMeta().doesAllowPVP();
+	}
+
+	public synchronized boolean doesAllowPistonMovement() {
+		return this.getClaimMeta().doesAllowPistonMovement();
+	}
+
+	public synchronized boolean doesAllowTeleport() {
+		return this.getClaimMeta().doesAllowTeleport();
 	}
 }
