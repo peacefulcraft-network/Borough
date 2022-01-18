@@ -159,7 +159,9 @@ public class PlayerBlockListener implements Listener {
 		ev.getBlocks().forEach((state) -> {
 			Block block = state.getBlock();
 			BoroughChunk chunk = Borough.getClaimStore().getChunk(block.getLocation());
-			if (chunk.isChunkClaimed() && chunk.getClaimMeta().getOwners().contains(p.getUniqueId())) {
+
+			// We need to allow players to fertilize in the wild and protect their claims
+			if (!chunk.isChunkClaimed() || BoroughActionExecutor.canBuild(p, block.getLocation(), block.getType())) {
 				allowed.add(state);
 			}
 		});
