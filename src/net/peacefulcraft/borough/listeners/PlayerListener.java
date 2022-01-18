@@ -97,7 +97,7 @@ public class PlayerListener implements Listener {
 				ItemLists.REDSTONE_INTERACTABLES.contains(clickedMat.name()) ||
 				ItemLists.CANDLES.contains(clickedMat.name()) ||
 				clickedMat == Material.BEACON || clickedMat == Material.DRAGON_EGG ||
-				clickedMat == Material.COMMAND_BLOCK) {
+				clickedMat == Material.COMMAND_BLOCK || clickedMat == Material.CAKE) {
 
 				ev.setCancelled(!BoroughActionExecutor.canBreak(player, clickedBlock.getLocation(), clickedMat));
 			}
