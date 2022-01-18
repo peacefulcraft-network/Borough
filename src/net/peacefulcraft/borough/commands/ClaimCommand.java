@@ -1,6 +1,7 @@
 package net.peacefulcraft.borough.commands;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +20,8 @@ import net.peacefulcraft.borough.Borough;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaim;
+import net.peacefulcraft.borough.storage.BoroughClaimFlag;
+
 import org.bukkit.potion.PotionEffectType;
 
 public class ClaimCommand implements CommandExecutor, TabCompleter {
@@ -529,6 +532,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-moderator " + ChatColor.GRAY + " Grant build and add-builder permissions on a claim.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-admin " + ChatColor.GRAY + " Grant access to all commands on a claim.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "tp " + ChatColor.GRAY + " Teleport your claim with the given name.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "add-rule" + ChatColor.GRAY  + " Add permission rules to your claim.");
 	}
 
 	@Override
@@ -551,6 +555,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 					opts.add("add-admin");
 					opts.add("remove-user");
 					opts.add("tp");
+					opts.add("add-rule");
 					this.argMatch(opts, args[0]);
 					break;
 				case 2:
@@ -563,6 +568,10 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER));
 					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("extend")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER));
+					} else if (args[0].equalsIgnoreCase("add-rule")) {
+						List<String> sLis = new ArrayList<>();
+						for (BoroughClaimFlag flag : BoroughClaimFlag.values()) { sLis.add(flag.toString().toLowerCase().replaceAll("_", "")); }
+						opts.addAll(sLis);
 					}
 					this.argMatch(opts, args[1]);
 					break;
