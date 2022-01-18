@@ -11,6 +11,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -106,6 +107,23 @@ public class EntityListener implements Listener {
 		!BoroughActionExecutor.canExplosionDamageEntities(ev.getEntity().getLocation(), ev.getEntity(), ev.getCause())) {
 			ev.setDamage(0);
 			ev.setCancelled(true);
+		}
+
+		/**
+		 * The HangingBreakEvent does not prevent the item in the frame
+		 * from being destroyed / popping out.
+		 * We address in two locations.
+		 */
+		if (ev.getEntity() instanceof ItemFrame && ev instanceof EntityDamageByEntityEvent) {
+			EntityDamageByEntityEvent evv = (EntityDamageByEntityEvent)ev;
+
+			Object remover = evv.getDamager() instanceof Projectile ? ((Projectile)evv.getDamager()).getShooter() : evv.getDamager();
+			if (remover instanceof Player) {
+				ev.setCancelled(!BoroughActionExecutor.canBreak((Player)remover, ev.getEntity().getLocation(), Material.ITEM_FRAME));
+			} else {
+				BoroughChunk chunk = Borough.getClaimStore().getChunk(ev.getEntity().getLocation());
+				if (chunk != null) { ev.setCancelled(true); }
+			}
 		}
 	}
 
