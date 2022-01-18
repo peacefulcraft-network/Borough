@@ -36,8 +36,8 @@ import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
-import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
+import org.bukkit.event.hanging.HangingPlaceEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.projectiles.BlockProjectileSource;
 
@@ -84,6 +84,21 @@ public class EntityListener implements Listener {
 			}
 
 			ev.setCancelled(true);
+		}
+
+		/**
+		 * We need separate testing for armor stands as
+		 * we cannot efficiently prevent their destruction in death events
+		 */
+		if (victim.getType() == EntityType.ARMOR_STAND) {
+			Object killer = damager instanceof Projectile ? ((Projectile)damager).getShooter() : damager;
+			if (killer instanceof Player) {
+				ev.setCancelled(!BoroughActionExecutor.canBreak((Player)killer, victim.getLocation(), Material.ARMOR_STAND));
+			} else {
+				// Non-player probably a skeleton
+				BoroughChunk chunk = Borough.getClaimStore().getChunk(victim.getLocation());
+				if (chunk != null) { ev.setCancelled(true); }
+			}
 		}
 	}
 
