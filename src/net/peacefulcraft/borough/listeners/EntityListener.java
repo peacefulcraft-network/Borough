@@ -202,7 +202,7 @@ public class EntityListener implements Listener {
 				// If block is some sort of redstone switch
 				String matName = block.getType().name();
 				if (ItemLists.isSwitch(matName)) {
-					ev.setCancelled(!!BoroughActionExecutor.canInteract((Player)passenger, block.getLocation(), block.getType()));
+					ev.setCancelled(!BoroughActionExecutor.canInteract((Player)passenger, block.getLocation(), block.getType()));
 					return;
 				}
 			}
