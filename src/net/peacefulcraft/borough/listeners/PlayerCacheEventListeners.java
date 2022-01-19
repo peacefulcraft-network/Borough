@@ -28,6 +28,7 @@ public class PlayerCacheEventListeners implements Listener {
 		claims.forEach((claim) -> { Borough._this().logDebug(claim); });
 	}
 	
+	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent ev) {
 		Borough._this().logDebug("Processing logout for user " + ev.getPlayer().getName() + ". Requesting cache eviction.");
 		Borough.getClaimStore().evictCachedUserData(ev.getPlayer().getUniqueId());
