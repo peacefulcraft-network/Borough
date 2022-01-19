@@ -43,6 +43,9 @@ public class BoroughActionExecutor {
 	 */
 	private static boolean isAllowedAction(Player player, Location loc, Material mat, ActionType action, BoroughActionEvent event) {
 		
+		// Staff permission node
+		if (player.hasPermission("pcn.staff")) { return true; }
+
 		/**
 		 * Checking the chunk permissions of player
 		 * 
