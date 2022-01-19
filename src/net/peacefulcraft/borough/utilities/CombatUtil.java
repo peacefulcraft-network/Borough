@@ -97,7 +97,7 @@ public class CombatUtil {
 						if (!isOwner((Wolf)defender, attackingPlayer)) {
 							// If attacking player has break permissions then they can attack this wolf
 							// TODO: Possibly change this to a form of entity damage action
-							return BoroughActionExecutor.canBreak(attackingPlayer, defender.getLocation(), Material.STONE);
+							return !BoroughActionExecutor.canBreak(attackingPlayer, defender.getLocation(), Material.STONE);
 						}
 						return false;
 					}
@@ -105,7 +105,7 @@ public class CombatUtil {
 					// Check if entity is passive and permissions for farming
 					if (EntityTypeLists.isPassive(defender.getType())) {
 						// TODO: Possibly change this to a form of entity damage action
-						return BoroughActionExecutor.canBreak(attackingPlayer, defender.getLocation(), Material.WHEAT);
+						return !BoroughActionExecutor.canBreak(attackingPlayer, defender.getLocation(), Material.WHEAT);
 					}
 				}
 			}

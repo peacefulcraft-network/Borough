@@ -566,13 +566,9 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.MODERATOR));
 					} else if (args[0].equalsIgnoreCase("add-moderator") || args[0].equalsIgnoreCase("add-admin")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.OWNER));
-					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("extend")) {
+					} else if (args[0].equalsIgnoreCase("info") || args[0].equalsIgnoreCase("tp") || args[0].equalsIgnoreCase("delete") || args[0].equalsIgnoreCase("extend") || args[0].equalsIgnoreCase("add-rule")) {
 						opts.addAll(Borough.getClaimStore().getClaimNamesByUser(p.getUniqueId(), BoroughChunkPermissionLevel.BUILDER));
-					} else if (args[0].equalsIgnoreCase("add-rule")) {
-						List<String> sLis = new ArrayList<>();
-						for (BoroughClaimFlag flag : BoroughClaimFlag.values()) { sLis.add(flag.toString().toLowerCase().replaceAll("_", "")); }
-						opts.addAll(sLis);
-					}
+					} 
 					this.argMatch(opts, args[1]);
 					break;
 				case 3:
@@ -585,7 +581,20 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						claim.getBuilders().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
 						claim.getModerators().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
 						claim.getOwners().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
+					} else if (args[0].equalsIgnoreCase("add-rule")) {
+						List<String> sLis = new ArrayList<>();
+						for (BoroughClaimFlag flag : BoroughClaimFlag.values()) { sLis.add(flag.toString().toLowerCase().replaceAll("_", "")); }
+						opts.addAll(sLis);
 					}
+					this.argMatch(opts, args[2]);
+					break;
+				case 4:
+					if (args[0].equalsIgnoreCase("add-rule")) {
+						opts.add("true");
+						opts.add("false");
+					}
+					this.argMatch(opts, args[3]);
+					break;
 			}	
 		}
 
