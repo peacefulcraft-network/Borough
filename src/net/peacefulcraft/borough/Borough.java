@@ -152,7 +152,7 @@ public class Borough extends JavaPlugin {
 
 	private void setupEventListeners() {
 		this.getServer().getPluginManager().registerEvents(new ChunkCacheEventListeners(), this);
-		//this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerMovementListener(), this);
 
 		this.getServer().getPluginManager().registerEvents(new PlayerBlockListener(), this);
