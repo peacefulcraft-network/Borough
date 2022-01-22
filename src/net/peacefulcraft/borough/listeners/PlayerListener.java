@@ -4,6 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -76,7 +77,11 @@ public class PlayerListener implements Listener {
 				if (mat == Material.ARMOR_STAND || mat == Material.END_CRYSTAL) {
 					ev.setCancelled(!BoroughActionExecutor.canBreak(player, clickedBlock.getRelative(ev.getBlockFace()).getLocation(), mat));
 				}
-			}
+
+				if (mat == Material.FIREWORK_ROCKET && ItemLists.PRESSURE_PLATES.contains(clickedBlock.getRelative(BlockFace.UP, 1).getType().name())) {
+					ev.setCancelled(!BoroughActionExecutor.canBreak(player, clickedBlock.getRelative(BlockFace.UP).getLocation(), mat));
+				}
+ 			}
 		}
 
 		// Player did not use an item

@@ -59,7 +59,7 @@ public class BoroughActionExecutor {
 		 * Modified staff permission to be post processing.
 		 * Allows for better event logging.
 		 */
-		if (player.hasPermission("pcn.staff")) { 
+		if (player.hasPermission("pcn.staff") && Borough.getConfiguration().isStaffBypassEnabled()) { 
 			Borough._this().logDebug("[ActionExecutor] Staff Action Event " + player.getName() + ":" + (!event.isCancelled()));
 			return true; 
 		}
