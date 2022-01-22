@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
-import net.peacefulcraft.borough.Borough;
 import net.peacefulcraft.borough.event.actions.ActionType;
 import net.peacefulcraft.borough.event.executor.BoroughActionExecutor;
 import net.peacefulcraft.borough.utilities.EntityTypeLists;
@@ -42,8 +41,6 @@ public class PlayerListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent ev) {
 		Player player = ev.getPlayer();
 		Block clickedBlock = ev.getClickedBlock();
-
-		Borough._this().logDebug("[PlayerListener] Interact Fired.");
 
 		// Player is using an item
 		if (ev.hasItem()) {
