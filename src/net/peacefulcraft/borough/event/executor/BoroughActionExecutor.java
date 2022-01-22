@@ -188,6 +188,9 @@ public class BoroughActionExecutor {
 		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
 		if (chunk == null) { return true; }
 
+		// Chunk not claimed. We do not care
+		if (!chunk.isChunkClaimed()) { return true; }
+
 		boolean allowed = (chunk.isChunkClaimed() && chunk.canUserBuild(player.getUniqueId()) && chunk.doesAllowTeleport());
 		if (!allowed) { BoroughMessanger.sendErrorMessage(player, "You are not allowed to teleport in this claim!"); }
 		return allowed;
