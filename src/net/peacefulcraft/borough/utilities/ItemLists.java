@@ -166,6 +166,7 @@ public class ItemLists {
 	 * @return True if is a switch material
 	 */
 	public static boolean isSwitch(String name) {
-		return BUTTONS.contains(name) || PRESSURE_PLATES.contains(name) || name.equals("LEVER") || name.equals("TARGET");
+		return (BUTTONS.contains(name) || PRESSURE_PLATES.contains(name) || name.equals("LEVER") 
+				|| name.equals("TARGET") || WOOD_DOORS.contains(name) || FENCE_GATES.contains(name));
 	}
 }

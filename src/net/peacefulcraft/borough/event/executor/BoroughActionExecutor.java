@@ -43,9 +43,6 @@ public class BoroughActionExecutor {
 	 */
 	private static boolean isAllowedAction(Player player, Location loc, Material mat, ActionType action, BoroughActionEvent event) {
 		
-		// Staff permission node
-		if (player.hasPermission("pcn.staff")) { return true; }
-
 		/**
 		 * Checking the chunk permissions of player
 		 * 
@@ -56,6 +53,15 @@ public class BoroughActionExecutor {
 			event.setCancelled(true);
 			//TODO: Set more specific error message here
 			event.setMessage("You do not have permission to do that in this claim!");
+		}
+
+		/**
+		 * Modified staff permission to be post processing.
+		 * Allows for better event logging.
+		 */
+		if (player.hasPermission("pcn.staff")) { 
+			Borough._this().logDebug("[ActionExecutor] Staff Action Event " + player.getName() + ":" + (!event.isCancelled()));
+			return true; 
 		}
 
 		if (event.isCancelled() && event.getMessage() != null) {
