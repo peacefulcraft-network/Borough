@@ -22,6 +22,7 @@ public class WorldListeners implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onStructureGrow(StructureGrowEvent ev) {
 		Player p = ev.getPlayer();
+		if (p == null) { return; }
 
 		List<BlockState> disallowed = new ArrayList<>();
 		ev.getBlocks().forEach((state) -> {
