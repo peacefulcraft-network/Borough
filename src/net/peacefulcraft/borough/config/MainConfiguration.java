@@ -52,4 +52,6 @@ public class MainConfiguration extends Configuration {
 	public boolean isEndermanGriefEnabled() { return this.config.getBoolean("world.enderman_grief"); }
 	/**@return True if creatures can trigger pressure plate */
 	public boolean isCreatureTriggeringPressurPlateEnabled() { return this.config.getBoolean("world.creature_trigger_pressure_plate"); }
+	/**@return True if staff bypass is enabled */
+	public boolean isStaffBypassEnabled() { return this.config.getBoolean("staff_bypass"); }
 }
