@@ -167,6 +167,7 @@ public class ItemLists {
 	 */
 	public static boolean isSwitch(String name) {
 		return (BUTTONS.contains(name) || PRESSURE_PLATES.contains(name) || name.equals("LEVER") 
-				|| name.equals("TARGET") || WOOD_DOORS.contains(name) || FENCE_GATES.contains(name));
+				|| name.equals("TARGET") || WOOD_DOORS.contains(name) || FENCE_GATES.contains(name)
+				|| TRAPDOORS.contains(name));
 	}
 }

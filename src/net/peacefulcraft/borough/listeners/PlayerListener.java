@@ -88,7 +88,14 @@ public class PlayerListener implements Listener {
 		if (clickedBlock != null) {
 			Material clickedMat = clickedBlock.getType();
 
+			// Interactable switches.
 			if (ItemLists.isSwitch(clickedMat.name())) {
+				ev.setCancelled(!BoroughActionExecutor.canInteract(player, clickedBlock.getLocation(), clickedMat));
+				return;
+			}
+
+			// Chests.
+			if (clickedBlock.getType() == Material.CHEST || clickedBlock.getType() == Material.TRAPPED_CHEST) {
 				ev.setCancelled(!BoroughActionExecutor.canInteract(player, clickedBlock.getLocation(), clickedMat));
 				return;
 			}
