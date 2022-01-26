@@ -95,7 +95,7 @@ public class PlayerListener implements Listener {
 			}
 
 			// Chests.
-			if (clickedBlock.getType() == Material.CHEST || clickedBlock.getType() == Material.TRAPPED_CHEST || clickedBlock.getType() == Material.SHULKER_BOX) {
+			if (clickedBlock.getType() == Material.CHEST || clickedBlock.getType() == Material.TRAPPED_CHEST || ItemLists.SHULKER_BOXES.contains(clickedBlock.getType().name())) {
 				ev.setCancelled(!BoroughActionExecutor.canInteract(player, clickedBlock.getLocation(), clickedMat));
 				return;
 			}
