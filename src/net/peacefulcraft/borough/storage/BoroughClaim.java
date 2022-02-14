@@ -88,7 +88,7 @@ public class BoroughClaim {
 			synchronized(this) {
 				this.allowTeleport = b;
 			}
-			SQLQueries.setClaimFlag(this, BoroughClaimFlag.TELEPORT, b);
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_TELEPORT, b);
 		}
 
 	/**
@@ -117,6 +117,15 @@ public class BoroughClaim {
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.PUBLIC, b);
 		}
 
+	private Boolean allowMobSpawn;
+		public Boolean doesAllowMobSpawn() { return this.allowMobSpawn; }
+		public void setMobSpawn(Boolean b) {
+			synchronized(this) {
+				this.allowMobSpawn = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_MOB_SPAWN, b);
+		}
+
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders) {
 		this.claimId = claimId;
 		this.claimName = claimName;
@@ -130,7 +139,9 @@ public class BoroughClaim {
 		this.allowFluidMovement = true;
 		this.allowPVP = true;
 		this.allowPistonMovement = true;
+		this.allowTeleport = true;
 		this.isPublic = false;
+		this.allowMobSpawn = true;
 	}
 
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders, Boolean allowBlockDamage, Boolean allowFluidMovement, Boolean allowPvP) {

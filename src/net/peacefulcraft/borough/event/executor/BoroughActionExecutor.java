@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 
 import net.peacefulcraft.borough.Borough;
@@ -194,6 +195,24 @@ public class BoroughActionExecutor {
 		boolean allowed = (chunk.isChunkClaimed() && chunk.canUserBuild(player.getUniqueId()) && chunk.doesAllowTeleport());
 		if (!allowed) { BoroughMessanger.sendErrorMessage(player, "You are not allowed to teleport in this claim!"); }
 		return allowed;
+	}
+
+	public static boolean canSpawn(Location loc, SpawnReason reason) {
+		BoroughChunk chunk = Borough.getClaimStore().getChunk(loc);
+		if (chunk == null) { return true; }
+
+		// Chunk not claimed. We do not care.
+		if (!chunk.isChunkClaimed()) { return true; }
+
+		// Allowing breeding other mechanics to pass through
+		if (reason == SpawnReason.BEEHIVE || reason == SpawnReason.BREEDING || reason == SpawnReason.BUILD_IRONGOLEM || reason == SpawnReason.BUILD_SNOWMAN ||
+				reason == SpawnReason.BUILD_WITHER || reason == SpawnReason.CURED || reason == SpawnReason.DISPENSE_EGG || reason == SpawnReason.EGG || 
+				reason == SpawnReason.SHEARED || reason == SpawnReason.SLIME_SPLIT || reason == SpawnReason.SPAWNER || reason == SpawnReason.VILLAGE_DEFENSE) {
+			return true;
+		}
+
+		// Filtering all other events through permissions
+		return chunk.doesAllowMobSpawn();
 	}
 
 	/**

@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.world.PortalCreateEvent.CreateReason;
@@ -47,6 +49,13 @@ public class WorldListeners implements Listener {
 				break;
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onCreatureSpawn(CreatureSpawnEvent ev) {
+		// We want to allow peaceful breeding, beehives, etc.
+		// Do not allow the selection between basic spawning blocking between peaceful/hostile
+		ev.setCancelled(!BoroughActionExecutor.canSpawn(ev.getLocation(), ev.getSpawnReason()));
 	}
 
 }

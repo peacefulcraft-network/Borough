@@ -67,4 +67,8 @@ public class BoroughChunk {
 	public synchronized boolean doesAllowTeleport() {
 		return this.getClaimMeta().doesAllowTeleport();
 	}
+
+	public synchronized boolean doesAllowMobSpawn() {
+		return this.getClaimMeta().doesAllowMobSpawn();
+	}
 }
