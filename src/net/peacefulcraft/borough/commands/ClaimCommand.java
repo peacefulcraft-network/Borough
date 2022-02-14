@@ -1,7 +1,6 @@
 package net.peacefulcraft.borough.commands;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import net.md_5.bungee.api.ChatColor;
 import net.peacefulcraft.borough.Borough;
@@ -21,8 +21,6 @@ import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaim;
 import net.peacefulcraft.borough.storage.BoroughClaimFlag;
-
-import org.bukkit.potion.PotionEffectType;
 
 public class ClaimCommand implements CommandExecutor, TabCompleter {
 
@@ -57,7 +55,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 								});
 							} else {
 								BoroughClaim claim = Borough.getClaimStore().createClaim(args[1], p.getUniqueId());
-								BoroughChunk bChunk = Borough.getClaimStore().claimChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ(), claim);
+								//BoroughChunk bChunk = Borough.getClaimStore().claimChunk(chunk.getWorld().getName(), chunk.getX(), chunk.getZ(), claim);
 
 								// Go back to Bukkit land to do Bukkit things
 								Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
@@ -430,6 +428,12 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 										break; case "allowpistonmovement":
 											claim.setBlockMovement(state);
 											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowBlockMovement rule on " + args[1]);
+										break; case "allowteleport":
+											claim.setTeleport(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowTeleport rule on " + args[1]);
+										break; case "allowmobspawn":
+											claim.setMobSpawn(state);
+											sender.sendMessage(Borough.messagingPrefix + "Successfully modified allowMobSpawn rule on " + args[1]);
 										break; default:
 											sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects valid rules including: allowBlockDamage, allowFluidMovement, allowPVP. Please try again.");
 									}
