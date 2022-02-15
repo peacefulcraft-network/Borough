@@ -53,6 +53,7 @@ public class WorldListeners implements Listener {
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onCreatureSpawn(CreatureSpawnEvent ev) {
+		if (ev.getLocation() == null || ev.getSpawnReason() == null) { return; }
 		// We want to allow peaceful breeding, beehives, etc.
 		// Do not allow the selection between basic spawning blocking between peaceful/hostile
 		ev.setCancelled(!BoroughActionExecutor.canSpawn(ev.getLocation(), ev.getSpawnReason()));
