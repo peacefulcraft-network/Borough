@@ -144,7 +144,8 @@ public class BoroughClaim {
 		this.allowMobSpawn = true;
 	}
 
-	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders, Boolean allowBlockDamage, Boolean allowFluidMovement, Boolean allowPvP) {
+	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders, 
+		Boolean allowBlockDamage, Boolean allowFluidMovement, Boolean allowPvP, Boolean allowPistonMovement, Boolean allowTeleport, Boolean allowMobSpawn) {
 		this.claimId = claimId;
 		this.claimName = claimName;
 
@@ -156,8 +157,10 @@ public class BoroughClaim {
 		this.allowBlockDamage = allowBlockDamage;
 		this.allowFluidMovement = allowFluidMovement;
 		this.allowPVP = allowPvP;
-		this.allowPistonMovement = true;
+		this.allowPistonMovement = allowPistonMovement;
 		this.isPublic = false;
+		this.allowTeleport = allowTeleport;
+		this.allowMobSpawn = allowMobSpawn;
 	}
 
 	/**
