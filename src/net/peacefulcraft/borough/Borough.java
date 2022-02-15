@@ -2,6 +2,9 @@ package net.peacefulcraft.borough;
 
 import java.util.ArrayList;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Chunk;
@@ -13,8 +16,13 @@ import net.peacefulcraft.borough.commands.ClaimCommand;
 import net.peacefulcraft.borough.commands.UnclaimCommand;
 import net.peacefulcraft.borough.config.MainConfiguration;
 import net.peacefulcraft.borough.listeners.ChunkCacheEventListeners;
+import net.peacefulcraft.borough.listeners.EntityListener;
+import net.peacefulcraft.borough.listeners.PlayerBlockListener;
 import net.peacefulcraft.borough.listeners.PlayerCacheEventListeners;
+import net.peacefulcraft.borough.listeners.PlayerListener;
 import net.peacefulcraft.borough.listeners.PlayerMovementListener;
+import net.peacefulcraft.borough.listeners.VehicleListener;
+import net.peacefulcraft.borough.listeners.WorldListeners;
 import net.peacefulcraft.borough.storage.BoroughChunk;
 import net.peacefulcraft.borough.storage.BoroughChunkPermissionLevel;
 import net.peacefulcraft.borough.storage.BoroughClaimStore;
@@ -37,6 +45,8 @@ public class Borough extends JavaPlugin {
 
 	private static UUIDCache uuidCache;
 		public static UUIDCache getUUIDCache() { return uuidCache; }
+
+	public static ExecutorService mysqlThreadPool;
 	/**
 	 * Called when Bukkit server enables the plguin
 	 * For improved reload behavior, use this as if it was the class constructor
@@ -46,6 +56,8 @@ public class Borough extends JavaPlugin {
 		// Save default config if one does not exist. Then load the configuration into
 		// memory
 		configuration = new MainConfiguration();
+
+		mysqlThreadPool = Executors.newFixedThreadPool(configuration.getWorkerPoolSize());
 
 		SQLQueries.setup();
 
@@ -61,7 +73,7 @@ public class Borough extends JavaPlugin {
 		});
 		logDebug("Found " + needToFetch.size() + " users who data that were already connected.");
 
-		this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+		mysqlThreadPool.submit(() -> {
 			needToFetch.forEach((uuid) -> claimStore.getClaimNamesByUser(uuid, BoroughChunkPermissionLevel.BUILDER));
 			logDebug("Finished user pre-caching.");
 		});
@@ -73,7 +85,7 @@ public class Borough extends JavaPlugin {
 			}
 		});
 		logDebug("Found " + chunksToLoad.size() + " chunks to pre-fetch that were already loaded.");
-		this.getServer().getScheduler().runTaskAsynchronously(this, () -> {
+		mysqlThreadPool.submit(() -> {
 			chunksToLoad.forEach((c) -> {
 				BoroughChunk chunk = claimStore.getChunk(c.world, c.x, c.z);
 				if (chunk.isChunkClaimed()) {
@@ -121,6 +133,12 @@ public class Borough extends JavaPlugin {
 	 */
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
+		try {
+			mysqlThreadPool.awaitTermination(5000, TimeUnit.SECONDS);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			logWarning("MySQL threadpool shutdown was interrupted. Minor dataloss may have occured.");
+		}
 		SQLQueries.teardown();
 	}
 
@@ -136,5 +154,11 @@ public class Borough extends JavaPlugin {
 		this.getServer().getPluginManager().registerEvents(new ChunkCacheEventListeners(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerCacheEventListeners(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerMovementListener(), this);
+
+		this.getServer().getPluginManager().registerEvents(new PlayerBlockListener(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		this.getServer().getPluginManager().registerEvents(new EntityListener(), this);
+		this.getServer().getPluginManager().registerEvents(new VehicleListener(), this);
+		this.getServer().getPluginManager().registerEvents(new WorldListeners(), this);
 	}
 }

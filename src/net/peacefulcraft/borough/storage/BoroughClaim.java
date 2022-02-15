@@ -38,6 +38,10 @@ public class BoroughClaim {
 	private List<UUID> builders;
 		public List<UUID> getBuilders() { return this.builders; }
 
+	/**
+	 * Does this claim allow block damage.
+	 * I.e. entity explosion, block explosion, enderman grief, etc. 
+	 */
 	private Boolean allowBlockDamage;
 		public Boolean doesAllowBlockDamage() { return this.allowBlockDamage; }
 		public void setBlockDamage(Boolean b) {
@@ -46,6 +50,12 @@ public class BoroughClaim {
 			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_BLOCK_DAMAGE, b);
 		}
+
+	/**
+	 * Does this claim allow fluids to move in the claim
+	 * If false, fluids cannot move INTO this claim
+	 * I.e. water and lava movement
+	 */
 	private Boolean allowFluidMovement;
 		public Boolean doesAllowFluidMovement() { return this.allowFluidMovement; }
 		public void setFluidMovement(Boolean b) {
@@ -54,6 +64,10 @@ public class BoroughClaim {
 			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_FLUID_MOVEMENT, b);
 		}
+
+	/**
+	 * Does this claim allow PvP
+	 */
 	private Boolean allowPVP;
 		public Boolean doesAllowPVP() { return this.allowPVP; }
 		public void setPVP(Boolean b) {
@@ -61,6 +75,55 @@ public class BoroughClaim {
 				this.allowPVP = b;
 			}
 			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_PVP, b);
+		}
+
+	/**
+	 * Does this claim allow teleporting within it
+	 * This prevents teleport items from being used ONLY.
+	 * Does not block commands
+	 */
+	private Boolean allowTeleport;
+		public Boolean doesAllowTeleport() { return this.allowTeleport; }
+		public void setTeleport(Boolean b) {
+			synchronized(this) {
+				this.allowTeleport = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_TELEPORT, b);
+		}
+
+	/**
+	 * Does this claim allow piston movement in the claim
+	 * If false, pistons and their moved blocks cannot move INTO this claim
+	 */
+	private Boolean allowPistonMovement;
+		public Boolean doesAllowPistonMovement() { return this.allowPistonMovement; }
+		public void setBlockMovement(Boolean b) {
+			synchronized(this) {
+				this.allowPistonMovement = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_PISTON_MOVEMENT, b);
+		}
+
+	/**
+	 * Is this claim open to the public
+	 * If true, other flags still take precedence
+	 */
+	private Boolean isPublic;
+		public Boolean isPublic() { return this.isPublic; }
+		public void setPublic(Boolean b) {
+			synchronized(this) {
+				this.isPublic = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.PUBLIC, b);
+		}
+
+	private Boolean allowMobSpawn;
+		public Boolean doesAllowMobSpawn() { return this.allowMobSpawn; }
+		public void setMobSpawn(Boolean b) {
+			synchronized(this) {
+				this.allowMobSpawn = b;
+			}
+			SQLQueries.setClaimFlag(this, BoroughClaimFlag.ALLOW_MOB_SPAWN, b);
 		}
 
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders) {
@@ -75,6 +138,10 @@ public class BoroughClaim {
 		this.allowBlockDamage = true;
 		this.allowFluidMovement = true;
 		this.allowPVP = true;
+		this.allowPistonMovement = true;
+		this.allowTeleport = true;
+		this.isPublic = false;
+		this.allowMobSpawn = true;
 	}
 
 	public BoroughClaim(int claimId, String claimName, List<UUID> owners, List<UUID> moderators, List<UUID> builders, Boolean allowBlockDamage, Boolean allowFluidMovement, Boolean allowPvP) {
@@ -89,6 +156,8 @@ public class BoroughClaim {
 		this.allowBlockDamage = allowBlockDamage;
 		this.allowFluidMovement = allowFluidMovement;
 		this.allowPVP = allowPvP;
+		this.allowPistonMovement = true;
+		this.isPublic = false;
 	}
 
 	/**

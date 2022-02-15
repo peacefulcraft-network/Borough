@@ -6,18 +6,18 @@ import net.peacefulcraft.borough.Borough;
 
 public class BoroughChunk {
 
+	// claim key is a string (immutable) so synchronized blocks are not needed.
+	// We only need to sync (this) so the chunk doesn't get moved around during claim checks
 	private String claimKey;
 		/**
 		 * @return Associated claim information or NULL of chunk is unclaimed
 		 */
 		public synchronized BoroughClaim getClaimMeta() {
-			synchronized(this.claimKey) {
-				if (this.claimKey.length() == 0) { return null; }
-				return Borough.getClaimStore().getClaim(this.claimKey);
-			}
+			if (this.claimKey.length() == 0) { return null; }
+			return Borough.getClaimStore().getClaim(this.claimKey);
 		}
-		public synchronized void clearClaimMeta() { this.claimKey = ""; }
-		public synchronized void setClaimMeta(String claimKey) { this.claimKey = claimKey; }
+		public void clearClaimMeta() { this.claimKey = ""; }
+		public void setClaimMeta(String claimKey) { this.claimKey = claimKey; }
 
 	// Immutable. Don't need to sync
 	private String world;
@@ -39,13 +39,13 @@ public class BoroughChunk {
 	}
 
 	public synchronized boolean canUserBuild(UUID user) {
-		synchronized(this.claimKey) {
-			return (
-				this.getClaimMeta().getBuilders().contains(user)
-				|| this.getClaimMeta().getModerators().contains(user)
-				|| this.getClaimMeta().getOwners().contains(user)
-			);
-		}
+		return (
+			this.getClaimMeta() == null // User can build in the wilderness
+			/*this.getClaimMeta().isPublic()*/
+			|| this.getClaimMeta().getBuilders().contains(user)
+			|| this.getClaimMeta().getModerators().contains(user)
+			|| this.getClaimMeta().getOwners().contains(user)
+		);
 	}
 
 	public synchronized boolean doesAllowBlockDamage() {
@@ -58,5 +58,17 @@ public class BoroughChunk {
 
 	public synchronized boolean doesAllowPVP() {
 		return this.getClaimMeta().doesAllowPVP();
+	}
+
+	public synchronized boolean doesAllowPistonMovement() {
+		return this.getClaimMeta().doesAllowPistonMovement();
+	}
+
+	public synchronized boolean doesAllowTeleport() {
+		return this.getClaimMeta().doesAllowTeleport();
+	}
+
+	public synchronized boolean doesAllowMobSpawn() {
+		return this.getClaimMeta().doesAllowMobSpawn();
 	}
 }
