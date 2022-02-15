@@ -90,6 +90,9 @@ public class SQLQueries {
 			Boolean allowBlockDamage = result.getBoolean("allow_block_damage");
 			Boolean allowFluidMovement = result.getBoolean("allow_fluid_movement");
 			Boolean allowPvP = result.getBoolean("allow_pvp");
+			Boolean allowPistonMovement = result.getBoolean("allow_piston_movement");
+			Boolean allowTeleport = result.getBoolean("allow_teleport");
+			Boolean allowMobSpawn = result.getBoolean("allow_mob_spawn");
 			result.close();
 			stmt.close();
 
@@ -120,7 +123,7 @@ public class SQLQueries {
 				}
 			}
 
-			BoroughClaim claimMeta = new BoroughClaim(claim_id, claim_name, owners, moderators, builders, allowBlockDamage, allowFluidMovement, allowPvP);
+			BoroughClaim claimMeta = new BoroughClaim(claim_id, claim_name, owners, moderators, builders, allowBlockDamage, allowFluidMovement, allowPvP, allowPistonMovement, allowTeleport, allowMobSpawn);
 			result.close();
 			stmt.close();
 			return claimMeta;
