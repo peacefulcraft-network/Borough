@@ -10,10 +10,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.world.PortalCreateEvent;
-import org.bukkit.event.world.StructureGrowEvent;
 import org.bukkit.event.world.PortalCreateEvent.CreateReason;
+import org.bukkit.event.world.StructureGrowEvent;
 
 import net.peacefulcraft.borough.Borough;
 import net.peacefulcraft.borough.event.executor.BoroughActionExecutor;
