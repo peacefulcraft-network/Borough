@@ -545,6 +545,11 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 		if (!(sender instanceof Player)) { return opts; }
 		Player p = (Player) sender;
 
+		// account for empty string tab completes when the user has just put a space after pos n-1, but not typed anything useful yet.
+		for (String arg: args) {
+			if (arg.trim().length() == 0) { return opts; }
+		}
+
 		if (command.getName().equalsIgnoreCase("claim")) {
 			switch (args.length) {
 				case 1:
@@ -582,6 +587,8 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 						});
 					} else if (args[0].equalsIgnoreCase("remove-user")) {
 						BoroughClaim claim = Borough.getClaimStore().getClaim(args[1]);
+						if (claim == null) { return opts; }
+
 						claim.getBuilders().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
 						claim.getModerators().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
 						claim.getOwners().forEach((uuid) -> opts.add(Borough.getUUIDCache().uuidToUsername(uuid)));
@@ -616,6 +623,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 		Iterator<String> i = suggestions.iterator();
 		while (i.hasNext()) {
 			String opt = i.next();
+			if (opt == null) { continue; }
 			if (!opt.contains(arg)) {
 				i.remove();
 			}
