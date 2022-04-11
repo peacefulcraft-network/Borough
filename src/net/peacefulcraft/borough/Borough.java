@@ -134,7 +134,7 @@ public class Borough extends JavaPlugin {
 	public void onDisable() {
 		this.getServer().getScheduler().cancelTasks(this);
 		try {
-			mysqlThreadPool.awaitTermination(5000, TimeUnit.SECONDS);
+			mysqlThreadPool.awaitTermination(5000, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			logWarning("MySQL threadpool shutdown was interrupted. Minor dataloss may have occured.");
