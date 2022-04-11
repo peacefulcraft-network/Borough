@@ -163,10 +163,10 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 								claim.getOwners().forEach((uuid) -> { ownerUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
 
 								final StringBuilder moderatorUsernames = new StringBuilder();
-								claim.getOwners().forEach((uuid) -> { moderatorUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
+								claim.getModerators().forEach((uuid) -> { moderatorUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
 
 								final StringBuilder builderUsernames = new StringBuilder();
-								claim.getOwners().forEach((uuid) -> { builderUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
+								claim.getBuilders().forEach((uuid) -> { builderUsernames.append(Borough.getUUIDCache().uuidToUsername(uuid) + ", "); });
 
 								// Go back to Bukkit land to do Bukkit things
 								Borough._this().getServer().getScheduler().runTask(Borough._this(), () -> {
