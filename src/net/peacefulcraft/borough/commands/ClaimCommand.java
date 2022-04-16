@@ -230,11 +230,13 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									Borough._this().logSevere(ex.getMessage());
 									ex.printStackTrace();
 								}
+							} else {
+								sender.sendMessage(Borough.messagingPrefix + "'add-builder' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 							}
 						}
 					});
 				} else {
-					sender.sendMessage(Borough.messagingPrefix + "'add-builder' command expects a claim name too. Claim names cannot contain spaces.");
+					sender.sendMessage(Borough.messagingPrefix + "'add-builder' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 				}
 				break;
 
@@ -274,11 +276,13 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									Borough._this().logSevere(ex.getMessage());
 									ex.printStackTrace();
 								}
+							} else {
+								sender.sendMessage(Borough.messagingPrefix + "'add-moderator' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 							}
 						}
 					});
 				} else {
-					sender.sendMessage(Borough.messagingPrefix + "'add-moderator' command expects a claim name too. Claim names cannot contain spaces.");
+					sender.sendMessage(Borough.messagingPrefix + "'add-moderator' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 				}
 				break;
 
@@ -319,11 +323,13 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									Borough._this().logSevere(ex.getMessage());
 									ex.printStackTrace();
 								}
+							} else {
+								sender.sendMessage(Borough.messagingPrefix + "'add-admin' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 							}
 						}
 					});
 				} else {
-					sender.sendMessage(Borough.messagingPrefix + "'add-admin' command expects a claim name too. Claim names cannot contain spaces.");
+					sender.sendMessage(Borough.messagingPrefix + "'add-admin' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 				}
 				break;
 
@@ -374,11 +380,13 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									Borough._this().logSevere(ex.getMessage());
 									ex.printStackTrace();
 								}
+							} else {
+								sender.sendMessage(Borough.messagingPrefix + "'remove-user' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 							}
 						}
 					});
 				} else {
-					sender.sendMessage(Borough.messagingPrefix + "'remove-user' command expects a claim name too. Claim names cannot contain spaces.");
+					sender.sendMessage(Borough.messagingPrefix + "'remove-user' command expects a claim name and username as arguments. Claim names cannot contain spaces.");
 				}
 				break;
 			case "add-rule":
@@ -443,6 +451,8 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 									Borough._this().logSevere(ex.getMessage());
 									ex.printStackTrace();
 								}
+							} else {
+								sender.sendMessage(Borough.messagingPrefix + "'add-rule' command expects a claim name, rule, and boolean. Valid rules are: allowBlockDamage, allowFluidMovement, allowPVP. Contact staff if the issue persists.");
 							}
 						}
 					});
