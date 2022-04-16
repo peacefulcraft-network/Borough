@@ -64,6 +64,10 @@ public class SQLQueries {
 
 		} catch (SQLException ex) {
 			Borough._this().logSevere("Error creating claim " + name + " for " + owner + ". ");
+			// duplicate key, try to refresh cache because it is probably wrong if this happens.
+			if (ex.getErrorCode() == 1022) {
+				Borough.mysqlThreadPool.execute(() -> { Borough.getClaimStore().getClaim(name, true); });
+			}
 			throw new RuntimeException("Query error.", ex);
 		}
 	}
@@ -165,6 +169,10 @@ public class SQLQueries {
 
 		} catch (SQLException ex) {
 			Borough._this().logSevere("Error extending claim " + claimSource.getClaimId() + " (" + claimTarget.getWorld() + "," + claimTarget.getChunkX() + "," + claimTarget.getChunkZ() + ").");
+			// duplicate key, try to refresh cache because it is probably wrong if this happens.
+			if (ex.getErrorCode() == 1022) {
+				Borough.mysqlThreadPool.execute(() -> { Borough.getClaimStore().getChunk(claimTarget.getWorld(), claimTarget.getChunkX(), claimTarget.getChunkZ(), true); });
+			}
 			throw new RuntimeException("Query error.", ex);
 		}
 	}
