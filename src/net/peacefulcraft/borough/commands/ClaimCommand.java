@@ -545,6 +545,7 @@ public class ClaimCommand implements CommandExecutor, TabCompleter {
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-builder " + ChatColor.GRAY + " Grant build permission on a claim.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-moderator " + ChatColor.GRAY + " Grant build and add-builder permissions on a claim.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-admin " + ChatColor.GRAY + " Grant access to all commands on a claim.");
+		sender.sendMessage(ChatColor.GOLD + "  - " + "remove-user " + ChatColor.GRAY  + " Revoke build, moderation, or admin access to a claim.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "tp " + ChatColor.GRAY + " Teleport your claim with the given name.");
 		sender.sendMessage(ChatColor.GOLD + "  - " + "add-rule" + ChatColor.GRAY  + " Add permission rules to your claim.");
 	}
